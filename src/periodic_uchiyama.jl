@@ -48,43 +48,44 @@ function tempscoll(x, y, v, w, ϵ)
         ady = abs(dy)
         adxy = abs(adx - ady)
 
-        if (w[1] == 1 && v[1] == -1 && ady < 2ϵ)
+        if w[1] == 1 && v[1] == -1 && ady < 2ϵ
             deltat1 = (2ϵ - dx - ady) / 2
             deltat2 = (- 2ϵ - dx + ady) / 2
-        elseif (v[1] == 1 && w[1] == -1 && ady < 2ϵ)
+        elseif v[1] == 1 && w[1] == -1 && ady < 2ϵ
             deltat1 = (2ϵ + dx - ady) / 2
             deltat2 = (- 2ϵ + dx + ady) / 2
-        elseif (w[2] == 1 && v[1] == -1 && adx < 2ϵ)
+        elseif w[2] == 1 && v[2] == -1 && adx < 2ϵ
             deltat1 = (2ϵ - adx - dy) / 2
             deltat2 = (- 2ϵ + adx - dy) / 2
-        elseif (v[2] == 1 && w[2] == -1 && adx < 2ϵ)
+        elseif v[2] == 1 && w[2] == -1 && adx < 2ϵ
             deltat1 = (2ϵ - adx + dy) / 2
             deltat2 = (- 2ϵ + adx + dy) / 2
-        elseif (w[1] == 1 && v[2] == 1 && adxy < 2ϵ)
+        elseif w[1] == 1 && v[2] == 1 && adxy < 2ϵ
             deltat1 = (dy - dx - 2ϵ) / 2
             deltat2 = (dy - dx + 2ϵ) / 2
-        elseif (v[1] == 1 && w[2] == 1 && adxy < 2ϵ)
+        elseif v[1] == 1 && w[2] == 1 && adxy < 2ϵ
             deltat1 = (-dy + dx - 2ϵ) / 2
             deltat2 = (-dy + dx + 2ϵ) / 2
-        elseif (w[1] == 1 && v[2] == -1 && adxy < 2ϵ)
+        elseif w[1] == 1 && v[2] == -1 && adxy < 2ϵ
             deltat1 = (- dx - dy - 2ϵ) / 2
             deltat2 = (- dx - dy + 2ϵ) / 2
-        elseif (v[1] == 1 && w[2] == -1 && adxy < 2ϵ)
+        elseif v[1] == 1 && w[2] == -1 && adxy < 2ϵ
             deltat1 = (dx + dy - 2ϵ) / 2
             deltat2 = (dx + dy + 2ϵ) / 2
-        elseif (w[1] == -1 && v[2] == 1 && adxy < 2ϵ)
+        elseif w[1] == -1 && v[2] == 1 && adxy < 2ϵ
             deltat1 = (dx + dy + 2ϵ) / 2
             deltat2 = (dx + dy - 2ϵ) / 2
-        elseif (v[1] == -1 && w[2] == 1 && adxy < 2ϵ)
+        elseif v[1] == -1 && w[2] == 1 && adxy < 2ϵ
             deltat1 = (- dx - dy + 2ϵ) / 2
             deltat2 = (- dx - dy - 2ϵ) / 2
-        elseif (w[1] == -1 && v[2] == -1 && adxy < 2ϵ)
+        elseif w[1] == -1 && v[2] == -1 && adxy < 2ϵ
             deltat1 = (dx - dy + 2ϵ) / 2
             deltat2 = (dx - dy - 2ϵ) / 2
-        elseif (v[1] == -1 && w[2] == -1 && adxy < 2ϵ)
+        elseif v[1] == -1 && w[2] == -1 && adxy < 2ϵ
             deltat1 = (- dx + dy + 2ϵ) / 2
             deltat2 = (- dx + dy - 2ϵ) / 2
         end
+
 
     end
 
@@ -97,9 +98,7 @@ const offset = [[0, 0], [1,  0], [-1,  0],
                 [0, 1], [0, -1], [-1,  1], 
                 [1, 1], [1, -1], [-1, -1]]
 
-function compute_dt!(i, q, v, ϵ, dt, fantome)
-
-    n = length(q)
+function compute_dt!(i, n, q, v, ϵ, dt, fantome)
 
     for j in 1:n
         if i != j
@@ -129,21 +128,11 @@ struct PCollisionMatrix
         fantome = zeros(Int, (n, n))
         fill!(dt, Inf)
         fill!(fantome, 0)
-        i = 0
-        for k in 1:n
-            for l in k+1:n
-                dt_local = Inf
-                i = 0
-                while (isinf(dt_local) && i < 9)
-                    i += 1
-                    dt_local = tempscoll(q[k] + offset[i], q[l], v[k], v[l], ϵ)
-                end
 
-                dt[k, l] = dt_local
-                fantome[k, l] = i
-
-            end
+        for i in 1:n
+            compute_dt!(i, i, q, v, ϵ, dt, fantome)
         end
+
 
         new( dt, fantome )
 
@@ -198,8 +187,8 @@ function step!(n, ϵ, q, v, collisions)
     reset!(collisions.dt, i1)
     reset!(collisions.dt, i2)
 
-    compute_dt!(i1, q, v, ϵ, collisions.dt, collisions.fantome)
-    compute_dt!(i2, q, v, ϵ, collisions.dt, collisions.fantome)
+    compute_dt!(i1, n, q, v, ϵ, collisions.dt, collisions.fantome)
+    compute_dt!(i2, n, q, v, ϵ, collisions.dt, collisions.fantome)
 
     return dt
 
