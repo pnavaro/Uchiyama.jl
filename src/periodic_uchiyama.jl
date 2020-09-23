@@ -9,9 +9,9 @@ function init_particles(n, ϵ, rng)
 
     function overlap( p, klm )
         for j in 1:(klm-1)
-            (norm(p .- q[j], 1) < 2ϵ) && (return true)
+            (norm(p .- q[j], 1) < 2ϵ) && (return false)
         end
-        return false
+        return true
     end
     
     for klm in 2:n
@@ -20,7 +20,7 @@ function init_particles(n, ϵ, rng)
 
         for _ in 1:1000
             p = rand(2)
-            !overlap(p, klm) && break
+            overlap(p, klm) && break
         end
 
         q[klm] = p
