@@ -1,31 +1,41 @@
+using Random
 using LinearAlgebra
 
-function overlap( p, q, k, ϵ )
-   for j in 1:(k-1)
-       (norm(p .- q[j], 1) < 2ϵ) && (return true)
+function overlap( p, q, ϵ )
+
+   for r in q
+       all(abs.(p .- r) .< 2ϵ) && (return true)
    end
+
    return false
+
 end
 
-function init_particles(n, ϵ, rng)
+function init_particles(rng, n, ϵ )
 
-    q = [zeros(2) for i in 1:n]
-    q[1] = [0.5,0.5]
+    q = Vector{Float64}[]
 
-    
-    for k in 2:n
+    push!(q, [0.5,0.5])
+
+    for i in 1:n-1
 
         p = copy(q[1])
-
-        while overlap(p, q, k, ϵ)
-            p .= rand(2)
+        k = 0
+        while overlap(p, q, ϵ) && k < 1000
+            rand!(rng, p)
+            k += 1
         end
 
-        q[k] .= p
+        if k < 1000
+           push!(q, p)
+        else
+           @error "echec du tirage $i"
+        end
 
     end
 
     vitesses = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    n = length(q)
     v = [vitesses[rand(1:end)] for i in 1:n]
 
     return q, v
@@ -127,10 +137,20 @@ struct PCollisionMatrix
         fill!(dt, Inf)
         fill!(fantome, 0)
 
-        for i in 1:n
-            compute_dt!(i, i, q, v, ϵ, dt, fantome)
-        end
+        for k in 1:n
+            for l in (k+1):n
+                dt_local = Inf
+                i = 0
+                while (isinf(dt_local) && i < 9)
+                    i += 1
+                    dt_local = tempscoll(q[l] + offset[i], q[k], v[l], v[k], ϵ)
+                end
 
+                dt[k, l] = dt_local
+                fantome[k, l] = i
+
+            end
+        end
 
         new( dt, fantome )
 
@@ -141,7 +161,7 @@ end
 function dt_min_position(self)
     p = argmin(self.dt)
     dt_min = self.dt[p]
-    num_fant = self.fantome[p]
+    num_fant = self.fantome[p]+1
     return dt_min, num_fant, p[1], p[2]
 end
 
@@ -168,18 +188,18 @@ function step!(n, ϵ, q, v, collisions)
 
     if v[i1]'v[i2] == 0
 
-        tmp = v[i1] 
-        v[i1] .= copy(v[i2])
-        v[i2] .= tmp  # swap velocities
+        v[[i1,i2]] = v[[i2,i1]] # swap velocities
 
     elseif v[i1]'v[i2] == -1
 
         if (rot * v[i1])'*(q[i2] .+ offset[num_fant] .- q[i1]) < 0
-            v[i1] .= rot * v[i1]
-            v[i2] .= rot * v[i2]
+            v[i1] = rot * v[i1]
+            v[i2] = rot * v[i2]
         elseif (rot * v[i1])'*(q[i2] .+ offset[num_fant] .- q[i1]) > 0
-            v[i1] .= - rot * v[i1]
-            v[i2] .= - rot * v[i2]
+            v[i1] = - rot * v[i1]
+            v[i2] = - rot * v[i2]
+        else
+            @error "oups"
         end
 
     end
