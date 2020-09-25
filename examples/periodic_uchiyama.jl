@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 using Plots
-#using Uchiyama
 using Random
+using ProgressMeter
+using Revise
 
 
+# +
+using Uchiyama
 
 n = 60 # number of particles
 ϵ = 1 / n
@@ -15,15 +18,16 @@ q, v = init_particles(rng, n, ϵ)
 
 collisions = PeriodicCollisions(n, q, v, ϵ)
 
-# +
-anim = @animate for _ in 1:1000
-    
+steps = 1000
+pbar = Progress(steps)
 
+anim = @animate for _ in 1:steps
+    
      dt = step!(n, ϵ, q, v, collisions)
 
      p = plot(size  = (500,500), 
-              xlims = (-1,2), 
-              ylims = (-1,2), 
+              xlims = (0,1), 
+              ylims = (0,1), 
               grid  = false, 
               axis  = nothing, legend=false, framestyle = :box, widen = false)
 
@@ -32,9 +36,7 @@ anim = @animate for _ in 1:1000
                markershape  = :diamond, 
                markersize   = c, 
                aspect_ratio = :equal)
-     
-     println(dt)
-
+     next!(pbar)
 
 end
 # -
