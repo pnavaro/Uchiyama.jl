@@ -50,7 +50,7 @@ function tempscoll(x, y, v, w, ϵ)
     deltat1 = Inf
     deltat2 = Inf
 
-    if (y - x)'v > 0 > (y - x)'w
+    if (y - x)'v > 0.0 > (y - x)'w
 
         dx = y[1] - x[1]
         dy = y[2] - x[2]
@@ -165,7 +165,7 @@ end
 function dt_min_position(self)
     p = argmin(self.dt)
     dt_min = self.dt[p]
-    num_fant = self.fantome[p]+1
+    num_fant = self.fantome[p]
     return dt_min, num_fant, p[1], p[2]
 end
 
@@ -185,7 +185,8 @@ function step!(n, ϵ, q, v, collisions)
     dt, num_fant, i1, i2 = dt_min_position(collisions)
 
     for i in 1:n
-        q[i] = ( q[i] .+ dt .* v[i] ) % 1
+        qnew = q[i] .+ dt .* v[i]
+        q[i] = mod.(qnew, 1.)
     end
 
     """ Collide the two particles i1, i2 """
