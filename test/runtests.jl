@@ -15,9 +15,9 @@ using LinearAlgebra
    @test step!(n, ϵ, q, v, collisions) ≈ 0.2
 
    @test q[1] ≈ [0.5,0.4] 
-   @test v[1] ≈ [1,0]
+   @test v[1] ≈ [-1,0]
    @test q[2] ≈ [0.5,0.6] 
-   @test v[2] ≈ [-1,0]
+   @test v[2] ≈ [1,0]
 
    @test step!(n, ϵ, q, v, collisions) ≈ 0.5
 
@@ -67,3 +67,4 @@ end
 end
 
 include("test_tempscoll.jl")
+include("test_fantome.jl")
