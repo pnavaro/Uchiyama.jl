@@ -1,30 +1,56 @@
 using Test
 using Random
-
-#=
+using LinearAlgebra
 
 @testset "step" begin
+
+   import Uchiyama: PCollisionMatrix, step!
 
    n = 2
    ϵ = 0.1
    q = [[0.5,0.2], [0.5,0.8]]
-   v = [[0.0,1.0], [0.0,-1.0]]
+   v = [[0,1], [0,-1]]
    collisions = PCollisionMatrix(n, q, v, ϵ)
 
    @test step!(n, ϵ, q, v, collisions) ≈ 0.2
 
-   @show q
-   @test all(vcat(q...) .≈ [0.5, 0.4,  0.5, 0.6])
-   @show v
-   @test all(vcat(v...) .≈ [1.0, 0.0, -1.0, 0.0])
+   @test q[1] ≈ [0.5,0.4] 
+   @test v[1] ≈ [1,0]
+   @test q[2] ≈ [0.5,0.6] 
+   @test v[2] ≈ [-1,0]
 
    @test step!(n, ϵ, q, v, collisions) ≈ 0.5
 
+   @test q[1] ≈ [0.0,0.4] 
+   @test v[1] ≈ [0,-1]
+   @test q[2] ≈ [0.0,0.6] 
+   @test v[2] ≈ [0,1]
 
 end
-=#
 
 @testset "overlap" begin
+
+   import Uchiyama: overlap
+
+   q  = [0.5, 0.5]
+
+   p  = [0.6, 0.6]
+   ϵ  = 0.1
+   @test overlap( p, q, ϵ ) 
+   p  = [0.65, 0.65]
+   @test overlap( p, q, ϵ ) 
+   p  = [0.65, 0.5]
+   @test overlap( p, q, ϵ ) 
+   p  = [0.5, 0.65]
+   @test overlap( p, q, ϵ ) 
+   p  = [0.8, 0.8]
+   @test !overlap( p, q, ϵ )
+   p  = [0.1, 0.1]
+   @test !overlap( p, q, ϵ )
+   p  = [0.69, 0.69]
+   @test overlap( p, q, ϵ ) 
+   p  = [0.41, 0.4]
+   @test overlap( p, q, ϵ ) 
 
 end
 
@@ -32,12 +58,11 @@ end
 @testset "init_particles" begin
  
      import Uchiyama: init_particles
-     n = 100
-     ϵ = 1 / n
-     c = trunc(Int, 1000 * 2ϵ)
+     n = 40
+     ϵ = 0.01
      rng = MersenneTwister(1234)
      
-     q, v = init_particles(n, ϵ, rng)
+     q, v = init_particles(rng, n, ϵ)
 
 end
 
