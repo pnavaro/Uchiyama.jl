@@ -8,3 +8,5 @@
 This code is based on [Nathalie Ayi](https://www.ljll.math.upmc.fr/~ayi)'s work.
 
 [Numerical Study of the Uchiyama particle model](https://www.ljll.math.upmc.fr/~ayi/publication/uchiyama_oberwolfach/)
+
+![](examples/event_driven.gif)

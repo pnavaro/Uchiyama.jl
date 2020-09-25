@@ -162,7 +162,7 @@ struct PeriodicCollisions
 
 end
 
-function dt_min_position(self)
+function dt_min_position(self :: PeriodicCollisions)
     p = argmin(self.dt)
     dt_min = self.dt[p]
     num_fant = self.fantome[p]
