@@ -1,29 +1,27 @@
 using LinearAlgebra
 
+function overlap( p, q, k, ϵ )
+   for j in 1:(k-1)
+       (norm(p .- q[j], 1) < 2ϵ) && (return true)
+   end
+   return false
+end
+
 function init_particles(n, ϵ, rng)
 
     q = [zeros(2) for i in 1:n]
-    l1 = 0.5
-    l2 = 0.5
     q[1] = [0.5,0.5]
 
-    function overlap( p, klm )
-        for j in 1:(klm-1)
-            (norm(p .- q[j], 1) < 2ϵ) && (return false)
-        end
-        return true
-    end
     
-    for klm in 2:n
+    for k in 2:n
 
-        p = zeros(2)
+        p = copy(q[1])
 
-        for _ in 1:1000
-            p = rand(2)
-            overlap(p, klm) && break
+        while overlap(p, q, k, ϵ)
+            p .= rand(2)
         end
 
-        q[klm] = p
+        q[k] .= p
 
     end
 
@@ -161,15 +159,18 @@ function step!(n, ϵ, q, v, collisions)
     dt, num_fant, i1, i2 = dt_min_position(collisions)
 
     for i in 1:n
-        q[i][1] = (q[i][1] + dt .* v[i][1]) % 1
-        q[i][2] = (q[i][2] + dt .* v[i][2]) % 1
+        qnew = q[i] .+ dt .* v[i]
+        qnew = qnew .% [1.,1.]
+        q[i] .= qnew
     end
 
     """ Collide the two particles i1, i2 """
 
     if v[i1]'v[i2] == 0
 
-        v[[i1, i2]] = v[[i2, i1]]  # swap velocities
+        tmp = v[i1] 
+        v[i1] .= copy(v[i2])
+        v[i2] .= tmp  # swap velocities
 
     elseif v[i1]'v[i2] == -1
 
