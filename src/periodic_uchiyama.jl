@@ -203,8 +203,8 @@ function step!(n, ϵ, q, v, collisions)
         elseif (rot * v[i1])'*(q[i2] .+ offset[num_fant] .- q[i1]) > 0
             v[i1] = - rot * v[i1]
             v[i2] = - rot * v[i2]
-        else
-            @error "oups"
+        else # very rare case
+            v[[i1,i2]] = v[[i2,i1]] # swap velocities
         end
 
     end
