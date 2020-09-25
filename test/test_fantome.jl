@@ -24,7 +24,7 @@
          [-1.,   0.] ,
          [ 0.,  -1.]]
     
-    c = PCollisionMatrix( n, q, v, ϵ)
+    c = PeriodicCollisions( n, q, v, ϵ)
     
     ref = [0 9 9 1 9 9 9 9 1 1;
            0 0 9 1 9 1 9 1 9 1;

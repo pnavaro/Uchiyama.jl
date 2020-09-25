@@ -164,6 +164,7 @@ const wall_rebound = [
     v -> v[2] == -1 ? - rot * v :   rot * v ]
 
 
+#=
 function init_particles(rng, n, ϵ,)
 
     l1 = 0.5
@@ -215,6 +216,7 @@ function init_particles(rng, n, ϵ,)
     return q, v
 
 end
+=#
 
 function step!(n, ϵ, q, v, collisions, walls)
 
