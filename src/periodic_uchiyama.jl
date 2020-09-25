@@ -11,6 +11,8 @@ function overlap( p, q, ϵ )
 
 end
 
+export init_particles
+
 function init_particles(rng, n, ϵ )
 
     q = Vector{Float64}[]
@@ -125,12 +127,14 @@ function compute_dt!(i, n, q, v, ϵ, dt, fantome)
 end
 
 
-struct PCollisionMatrix
+export PeriodicCollisions
+
+struct PeriodicCollisions
 
     dt :: Array{Float64,2}
     fantome :: Array{Int, 2}
 
-    function PCollisionMatrix(n, q, v, ϵ)
+    function PeriodicCollisions(n, q, v, ϵ)
 
         dt = zeros(Float64, (n, n))
         fantome = zeros(Int, (n, n))
@@ -172,6 +176,8 @@ end
 
 const rot = [0 -1; 1 0]
 
+export step!
+
 function step!(n, ϵ, q, v, collisions)
 
     """ Compute smaller time step between two collisions """
@@ -179,9 +185,7 @@ function step!(n, ϵ, q, v, collisions)
     dt, num_fant, i1, i2 = dt_min_position(collisions)
 
     for i in 1:n
-        qnew = q[i] .+ dt .* v[i]
-        qnew = qnew .% [1.,1.]
-        q[i] .= qnew
+        q[i] = ( q[i] .+ dt .* v[i] ) % 1
     end
 
     """ Collide the two particles i1, i2 """
