@@ -10,7 +10,7 @@ using Uchiyama
 
 n = 60 # number of particles
 ϵ = 1 / n
-c = trunc(Int, 500ϵ) # marker size
+c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
@@ -27,7 +27,7 @@ anim = @animate for _ in 1:steps
     
      dt = step!(n, ϵ, q, v, particles, walls)
 
-     p = plot(size  = (500,500), 
+     p = plot(size  = (200,200), 
               xlims = (-0.5,0.5), 
               ylims = (-0.5,0.5), 
               grid  = false, 
