@@ -4,3 +4,4 @@
 /docs/build/
 *.swp
 examples/.ipynb_checkpoints/periodic_uchiyama-checkpoint.jl
+Manifest.toml
