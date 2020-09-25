@@ -4,13 +4,13 @@ using LinearAlgebra
 
 @testset "step" begin
 
-   import Uchiyama: PCollisionMatrix, step!
+   import Uchiyama: PeriodicCollisions, step!
 
    n = 2
    ϵ = 0.1
    q = [[0.5,0.2], [0.5,0.8]]
    v = [[0,1], [0,-1]]
-   collisions = PCollisionMatrix(n, q, v, ϵ)
+   collisions = PeriodicCollisions(n, q, v, ϵ)
 
    @test step!(n, ϵ, q, v, collisions) ≈ 0.2
 
