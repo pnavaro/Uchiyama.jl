@@ -31,13 +31,11 @@ anim = @animate for _ in 1:steps
               xlims = (-0.5,0.5), 
               ylims = (-0.5,0.5), 
               grid  = false, 
-              axis  = nothing, framestyle= :none, legend=false, widen = false)
+              axis  = nothing, framestyle= :box, legend=false, widen = false)
      
-     plot!( [x->x+0.5, x->-x+0.5, x->x-0.5, x->-x-0.5], lc = [0,0,0,0])
-
-     scatter!( getindex.(q,1), 
-               getindex.(q,2), 
-               markershape  = :diamond, 
+     scatter!( getindex.(q,1) .- getindex.(q,2), 
+               getindex.(q,2) .+ getindex.(q,1), 
+               markershape  = :square, 
                markersize   = c, 
                aspect_ratio = :equal)
      next!(pbar)
