@@ -8,8 +8,8 @@ using Revise
 # +
 using Uchiyama
 
-n = 60 # number of particles
-ϵ = 1 / n
+n = 40 # number of particles
+ϵ = 0.02
 c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
