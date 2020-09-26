@@ -1,4 +1,4 @@
-# Uchiyama
+# Uchiyama.jl
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://pnavaro.github.io/Uchiyama.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pnavaro.github.io/Uchiyama.jl/dev)
@@ -10,3 +10,4 @@ This code is based on [Nathalie Ayi](https://www.ljll.math.upmc.fr/~ayi)'s work.
 [Numerical Study of the Uchiyama particle model](https://www.ljll.math.upmc.fr/~ayi/publication/uchiyama_oberwolfach/)
 
 ![](examples/event_driven.gif)
+![](examples/hard_spheres.gif)
