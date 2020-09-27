@@ -18,7 +18,7 @@ pc = PeriodicCollisions(hs)
 
 # +
 
-steps = 100
+steps = 200
 pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
