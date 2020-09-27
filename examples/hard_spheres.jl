@@ -13,9 +13,9 @@ c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-q, v = hs_particles(rng, n, ϵ)
-pc = PCollision(n, q, v, ϵ)
-wc = WCollision(n, q, v, ϵ)
+hs = HardSpheres(rng, n, ϵ)
+pc = ParticleCollisions(hs)
+bc = BoxCollisions(hs)
 
 # +
 
@@ -24,7 +24,7 @@ pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
-    dt = step!(n, ϵ, q, v, pc, wc)
+    dt = step!(hs, pc, bc)
 
     p = plot(size  = (200,200), 
              xlims = (0,1), 
@@ -35,8 +35,8 @@ anim = @animate for _ in 1:steps
              legend=false, 
              widen = false)
     
-    scatter!( getindex.(q,1), 
-              getindex.(q,2), 
+    scatter!( getindex.(hs.q,1), 
+              getindex.(hs.q,2), 
               markershape  = :circle, 
               markersize   = c, 
               aspect_ratio = :equal)

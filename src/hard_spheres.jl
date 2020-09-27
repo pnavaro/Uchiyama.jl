@@ -48,13 +48,13 @@ function hstempscollmur(x, v, ϵ)
 end
 
 
-function hscompute_dt(i, n, q, v, ϵ, dt)
+function compute_dt!(dt, i, hs :: HardSpheres)
 
-    q_i = q[i]
-    v_i = v[i]
-    for j in 1:n
+    q_i = hs.q[i]
+    v_i = hs.v[i]
+    for j in 1:hs.n
         if i != j
-            tcoll = hstempscoll(q[j], q_i, v[j], v_i, ϵ)
+            tcoll = hstempscoll(hs.q[j], q_i, hs.v[j], v_i, hs.ϵ)
             if !isinf(tcoll)
                 dt[i, j] = tcoll
             end
@@ -62,39 +62,39 @@ function hscompute_dt(i, n, q, v, ϵ, dt)
     end
 end
 
-export PCollision
+export ParticleCollisions
 
-struct PCollision
+struct ParticleCollisions
 
     dt
 
-    function PCollision( n, q, v, ϵ)
+    function ParticleCollisions( hs :: HardSpheres)
 
-        dt = zeros(n, n)
+        dt = zeros(hs.n, hs.n)
         fill!(dt, Inf)
 
-        for k in 1:n
-            for l in (k+1):n
-                dt[k, l] = hstempscoll(q[l], q[k], v[l], v[k], ϵ)
+        for k in 1:hs.n
+            for l in (k+1):hs.n
+                dt[k, l] = hstempscoll(hs.q[l], hs.q[k], hs.v[l], hs.v[k], hs.ϵ)
             end
         end
         new( dt )
     end
 end
 
-export WCollision
+export BoxCollisions
 
-struct WCollision
+struct BoxCollisions
 
     dt
 
-    function WCollision( n, q, v, ϵ)
+    function BoxCollisions( hs :: HardSpheres)
 
-        dt = zeros(n, 2)
+        dt = zeros(hs.n, 2)
         fill!(dt, Inf)
 
-        for k in 1:n
-            t, m = hstempscollmur(q[k], v[k], ϵ)
+        for k in 1:hs.n
+            t, m = hstempscollmur(hs.q[k], hs.v[k], hs.ϵ)
             dt[k, m] = t
         end
 
@@ -110,59 +110,11 @@ const hs_wall_rebound = [
 ]
 
 
-export hs_particles
 
-function hs_particles(rng, n, ϵ)
+function step!(hs :: HardSpheres, collisions::ParticleCollisions, walls::BoxCollisions)
 
-    q = Vector{Float64}[]
-
-    J4 = [1 0; 0 1]
-
-    push!(q, [0.5000, 0.5000])
-    push!(q, [0.1622, 0.4505])
-    push!(q, [0.3112, 0.2290])
-    push!(q, [0.5285, 0.9133])
-    push!(q, [0.1656, 0.1524])
-    push!(q, [0.6020, 0.8258])
-    push!(q, [0.2630, 0.5383])
-    push!(q, [0.3000, 0.8000])
-    push!(q, [0.6892, 0.0782])
-    push!(q, [0.7482, 0.4427])
-
-    p = zeros(2)
-
-    for klm in 11:n
-        frein = 0
-        overlap = 1
-        while (overlap == 1) && frein < 10000
-
-            p0 = [2ϵ + (1 - 4ϵ) * rand(rng), 2ϵ + (1 - 4ϵ) * rand(rng)]
-            p = J4 * p0
-            overlap2 = 0
-            for subh in 1:(klm-1)
-                if norm(p - q[subh], 2) < 2ϵ
-                    overlap2 = 1
-                end
-            end
-
-            overlap = overlap2
-            frein += 1
-        end
-
-        frein == 10000 && (@error "Echec tirage initial")
-
-        push!(q, p)
-
-    end
-
-    v = [ randn(rng, 2) for j in 1:n ]
-
-    return q, v
-
-end
-
-function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
-
+    ϵ = hs.ϵ
+    n = hs.n
 
     tempsp, i1, i2 = dt_min_position(collisions)
 
@@ -171,12 +123,12 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
     if tempsp < tempsm
 
         for i in 1:n
-            q[i] = q[i] + tempsp * v[i]
+            hs.q[i] = hs.q[i] + tempsp * hs.v[i]
         end
 
-        J = ((v[i2] - v[i1])'*(q[i2] - q[i1])) / 2ϵ
-        v[i1] = v[i1] + J * (q[i2] - q[i1]) / 2ϵ
-        v[i2] = v[i2] - J * (q[i2] - q[i1]) / 2ϵ
+        J = ((hs.v[i2] - hs.v[i1])'*(hs.q[i2] - hs.q[i1])) / 2ϵ
+        hs.v[i1] = hs.v[i1] + J * (hs.q[i2] - hs.q[i1]) / 2ϵ
+        hs.v[i2] = hs.v[i2] - J * (hs.q[i2] - hs.q[i1]) / 2ϵ
 
         collisions.dt .-= tempsp
         reset!(collisions.dt, i1)
@@ -186,22 +138,22 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
         walls.dt[i1,:] .= Inf
         walls.dt[i2,:] .= Inf
 
-        hscompute_dt(i1, n, q, v, ϵ, collisions.dt)
-        hscompute_dt(i2, n, q, v, ϵ, collisions.dt)
+        compute_dt!(collisions.dt, i1, hs)
+        compute_dt!(collisions.dt, i2, hs)
 
-        t, i = hstempscollmur(q[i1], v[i1], ϵ)
+        t, i = hstempscollmur(hs.q[i1], hs.v[i1], ϵ)
         !isinf(t) && ( walls.dt[i1, i] = t)
 
-        t, i = hstempscollmur(q[i2], v[i2], ϵ)
+        t, i = hstempscollmur(hs.q[i2], hs.v[i2], ϵ)
         !isinf(t) && ( walls.dt[i2, i] = t)
 
     else
 
         for i in 1:n
-            q[i] = q[i] + tempsm * v[i]
+            hs.q[i] = hs.q[i] + tempsm * hs.v[i]
         end
 
-        v[j1] = hs_wall_rebound[j2](v[j1])
+        hs.v[j1] = hs_wall_rebound[j2](hs.v[j1])
 
         collisions.dt .-= tempsm
         reset!(collisions.dt, j1)
@@ -209,9 +161,9 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
         walls.dt .-= tempsm
         walls.dt[j1,:] .= Inf
 
-        hscompute_dt(j1, n, q, v, ϵ, collisions.dt)
+        compute_dt!(collisions.dt, j1, hs)
 
-        t, i = hstempscollmur(q[j1], v[j1], ϵ)
+        t, i = hstempscollmur(hs.q[j1], hs.v[j1], ϵ)
         !isinf(t) && (walls.dt[j1, i] = t)
 
     end
