@@ -210,8 +210,8 @@ function step!(n, ϵ, q, v, collisions)
     end
 
     collisions.dt .-= dt
-    reset!(collisions.dt, i1)
-    reset!(collisions.dt, i2)
+    collisions.dt[:, i1] .= Inf
+    collisions.dt[:, i2] .= Inf
 
     compute_dt!(i1, n, q, v, ϵ, collisions.dt, collisions.fantome)
     compute_dt!(i2, n, q, v, ϵ, collisions.dt, collisions.fantome)
