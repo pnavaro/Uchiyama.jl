@@ -19,6 +19,11 @@ struct ParticleCollisions
 
 end
 
+function reset!(pc :: ParticleCollisions, i)
+    pc.dt[i, :] .= Inf
+    pc.dt[:, i] .= Inf
+end
+
 export BoxCollisions
 
 struct BoxCollisions
@@ -46,7 +51,7 @@ struct BoxCollisions
 
         for k in 1:p.n
             t, m = compute_dt(p, k)
-            !isinf(t) && (dt[k, m] = t)
+            dt[k, m] = t
         end
 
         new(dt)
@@ -63,10 +68,7 @@ function compute_dt!(pc :: ParticleCollisions, i, particles :: Particles)
 
     for j in 1:particles.n
         if i != j
-            tcoll = compute_dt(particles, j, i)
-            if !isinf(tcoll)
-                dt[i, j] = tcoll
-            end
+            pc.dt[i, j] = compute_dt(particles, j, i)
         end
     end
 end

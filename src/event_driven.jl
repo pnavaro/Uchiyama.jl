@@ -6,13 +6,12 @@ const wall_rebound = [
 
 
 
-function step!(sq :: Squares, collisions, walls)
+function step!(sq :: Squares, pc, bc)
 
     n = sq.n
     ϵ = sq.ϵ
-    tempsp, i1, i2 = dt_min_position(collisions)
-
-    tempsm, j1, j2 = dt_min_position(walls) 
+    tempsp, i1, i2 = dt_min_position(pc)
+    tempsm, j1, j2 = dt_min_position(bc) 
 
     if tempsp < tempsm
 
@@ -37,22 +36,22 @@ function step!(sq :: Squares, collisions, walls)
             end
         end
 
-        collisions.dt .= collisions.dt .- tempsp
-        collisions.dt[:, i1] .= Inf
-        collisions.dt[:, i2] .= Inf
+        pc.dt .= pc.dt .- tempsp
+        pc.dt[:, i1] .= Inf
+        pc.dt[:, i2] .= Inf
 
-        walls.dt .= walls.dt .- tempsp
-        walls.dt[i1,:] .= Inf
-        walls.dt[i2,:] .= Inf
+        bc.dt .= bc.dt .- tempsp
+        bc.dt[i1,:] .= Inf
+        bc.dt[i2,:] .= Inf
 
-        compute_dt!(collisions.dt, i1, sq)
-        compute_dt!(collisions.dt, i2, sq)
+        compute_dt!(pc, i1, sq)
+        compute_dt!(pc, i2, sq)
 
-        t, i = sq(sq.q[i1], sq.v[i1])
-        !isinf(t) && (walls.dt[i1, i] = t)
+        t, i = compute_dt(sq, i1)
+        bc.dt[i1, i] = t
 
-        t, i = sq(sq.q[i2], sq.v[i2])
-        !isinf(t) && (walls.dt[i2, i] = t)
+        t, i = compute_dt(sq, i2)
+        bc.dt[i2, i] = t
 
     else
 
@@ -62,16 +61,16 @@ function step!(sq :: Squares, collisions, walls)
 
         sq.v[j1] = wall_rebound[j2](sq.v[j1])
 
-        collisions.dt .-= tempsm
-        reset!(collisions.dt, j1)
+        pc.dt .-= tempsm
+        reset!(pc, j1)
 
-        walls.dt .-= tempsm
-        walls.dt[j1,:] .= Inf
+        bc.dt .-= tempsm
+        bc.dt[j1,:] .= Inf
 
-        compute_dt!(collisions.dt, j1, sq)
+        compute_dt!(pc, j1, sq)
 
-        t, i = sq(sq.q[j1], sq.v[j1])
-        !isinf(t) && (walls.dt[j1, i] = t)
+        t, i = compute_dt(sq, j1)
+        bc.dt[j1, i] = t
 
     end
 
