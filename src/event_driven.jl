@@ -138,8 +138,8 @@ function step!(n, ϵ, q, v, collisions, walls)
         end
 
         collisions.dt .= collisions.dt .- tempsp
-        reset!(collisions.dt, i1)
-        reset!(collisions.dt, i2)
+        collisions.dt[:, i1] .= Inf
+        collisions.dt[:, i2] .= Inf
 
         walls.dt .= walls.dt .- tempsp
         walls.dt[i1,:] .= Inf
@@ -149,14 +149,10 @@ function step!(n, ϵ, q, v, collisions, walls)
         compute_dt!(i2, n, q, v, ϵ, collisions.dt)
 
         t, i = tempscollmur(q[i1], v[i1], ϵ)
-        if !isinf(t)
-            walls.dt[i1, i] = t
-        end
+        !isinf(t) && (walls.dt[i1, i] = t)
 
         t, i = tempscollmur(q[i2], v[i2], ϵ)
-        if !isinf(t)
-            walls.dt[i2, i] = t
-        end
+        !isinf(t) && (walls.dt[i2, i] = t)
 
     else
 
@@ -175,9 +171,7 @@ function step!(n, ϵ, q, v, collisions, walls)
         compute_dt!(j1, n, q, v, ϵ, collisions.dt)
 
         t, i = tempscollmur(q[j1], v[j1], ϵ)
-        if !isinf(t)
-            walls.dt[j1, i] = t
-        end
+        !isinf(t) && (walls.dt[j1, i] = t)
 
     end
 
