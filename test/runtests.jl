@@ -1,30 +1,38 @@
 using Test
 using Random
 using LinearAlgebra
+using Uchiyama
 
 @testset "step" begin
 
-   import Uchiyama: PeriodicCollisions, step!
 
    n = 2
    ϵ = 0.1
    q = [[0.5,0.2], [0.5,0.8]]
    v = [[0,1], [0,-1]]
-   collisions = PeriodicCollisions(n, q, v, ϵ)
 
-   @test step!(n, ϵ, q, v, collisions) ≈ 0.2
+   rng = MersenneTwister(42)
+   p = Squares(rng, n, ϵ)
+   for i in 1:n
+       p.q[i] = q[i]
+       p.v[i] = v[i]
+   end
 
-   @test q[1] ≈ [0.5,0.4] 
-   @test v[1] ≈ [0,-1]
-   @test q[2] ≈ [0.5,0.6] 
-   @test v[2] ≈ [0, 1]
+   collisions = PeriodicCollisions(p)
 
-   @test step!(n, ϵ, q, v, collisions) ≈ 0.3
+   @test step!(p, collisions) ≈ 0.2
 
-   @test q[1] ≈ [0.5,0.1] 
-   @test v[1] ≈ [0,1]
-   @test q[2] ≈ [0.5,0.9] 
-   @test v[2] ≈ [0,-1]
+   @test p.q[1] ≈ [0.5,0.4] 
+   @test p.v[1] ≈ [0,-1]
+   @test p.q[2] ≈ [0.5,0.6] 
+   @test p.v[2] ≈ [0, 1]
+
+   @test step!(p, collisions) ≈ 0.3
+
+   @test p.q[1] ≈ [0.5,0.1] 
+   @test p.v[1] ≈ [0,1]
+   @test p.q[2] ≈ [0.5,0.9] 
+   @test p.v[2] ≈ [0,-1]
 
 end
 
@@ -57,12 +65,14 @@ end
 
 @testset "init_particles" begin
  
-     import Uchiyama: init_particles
      n = 40
      ϵ = 0.01
      rng = MersenneTwister(1234)
      
-     q, v = init_particles(rng, n, ϵ)
+     sq = Squares(rng, n, ϵ)
+     @test true
+     hs = HardSpheres(rng, n, ϵ)
+     @test true
 
 end
 

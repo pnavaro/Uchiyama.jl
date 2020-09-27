@@ -2,6 +2,11 @@
 
     n = 10
     ϵ = 0.1
+
+    rng = MersenneTwister(42)
+
+    p = Squares(rng, n, ϵ)
+
     q = [[0.5       , 0.5       ],
          [0.20006862, 0.38139954],
          [0.32267135, 0.72687046],
@@ -23,8 +28,13 @@
          [-1.,   0.] ,
          [-1.,   0.] ,
          [ 0.,  -1.]]
+
+    for i in 1:n
+        p.q[i] = q[i]
+        p.v[i] = v[i]
+    end
     
-    c = PeriodicCollisions( n, q, v, ϵ)
+    c = PeriodicCollisions( p )
     
     ref = [0 9 9 1 9 9 9 9 1 1;
            0 0 9 1 9 1 9 1 9 1;

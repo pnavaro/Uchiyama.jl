@@ -1,9 +1,10 @@
 @testset "tempscoll" begin
 
-    import Uchiyama: tempscoll, offset
-
     n = 10
     ϵ = 0.1
+    rng = MersenneTwister(42)
+
+    p = Squares(rng, n, ϵ)
     
     q = [[0.5       , 0.5       ],
          [0.20006862, 0.38139954],
@@ -16,29 +17,33 @@
          [0.5846235 , 0.64552143],
          [0.45656816, 0.76644607]]
     
-    
-    v = [[ 0.,   1.] ,
-         [ 1.,   0.] ,
-         [-1.,   0.] ,
-         [ 0.,  -1.] ,
-         [ 1.,   0.] ,
-         [ 0.,   1.] ,
-         [ 0.,   1.] ,
-         [-1.,   0.] ,
-         [-1.,   0.] ,
+    v = [[ 0.,   1.],
+         [ 1.,   0.],
+         [-1.,   0.],
+         [ 0.,  -1.],
+         [ 1.,   0.],
+         [ 0.,   1.],
+         [ 0.,   1.],
+         [-1.,   0.],
+         [-1.,   0.],
          [ 0.,  -1.]]
+
+    for i in 1:n
+        p.q[i] = q[i]
+        p.v[i] = v[i]
+    end
     
-    @test tempscoll(q[4] + offset[1], q[1], v[4], v[1], ϵ) ≈ 0.130701845
-    @test tempscoll(q[9] + offset[1], q[1], v[9], v[1], ϵ) ≈ 0.015072465
-    @test tempscoll(q[4] + offset[1], q[2], v[4], v[2], ϵ) ≈ 0.339967765
-    @test tempscoll(q[6] + offset[1], q[2], v[6], v[2], ϵ) ≈ 0.122128645
-    @test tempscoll(q[8] + offset[1], q[2], v[8], v[2], ϵ) ≈ 0.123656685
-    @test tempscoll(q[7] + offset[3], q[3], v[7], v[3], ϵ) ≈ 0.412507920
-    @test tempscoll(q[6] + offset[1], q[4], v[6], v[4], ϵ) ≈ 0.267221131
-    @test tempscoll(q[7] + offset[1], q[4], v[7], v[4], ϵ) ≈ 0.180033270
-    @test tempscoll(q[8] + offset[2], q[5], v[8], v[5], ϵ) ≈ 0.405573952
-    @test tempscoll(q[9] + offset[2], q[5], v[9], v[5], ϵ) ≈ 0.367756020
-    @test tempscoll(q[8] + offset[1], q[6], v[8], v[6], ϵ) ≈ 0.034544210
-    @test tempscoll(q[8] + offset[7], q[7], v[8], v[7], ϵ) ≈ 0.885761939
+    @test Uchiyama.compute_dt(p, 4, 1, 1) ≈ 0.130701845
+    @test Uchiyama.compute_dt(p, 9, 1, 1) ≈ 0.015072465
+    @test Uchiyama.compute_dt(p, 4, 2, 1) ≈ 0.339967765
+    @test Uchiyama.compute_dt(p, 6, 2, 1) ≈ 0.122128645
+    @test Uchiyama.compute_dt(p, 8, 2, 1) ≈ 0.123656685
+    @test Uchiyama.compute_dt(p, 7, 3, 3) ≈ 0.412507920
+    @test Uchiyama.compute_dt(p, 6, 4, 1) ≈ 0.267221131
+    @test Uchiyama.compute_dt(p, 7, 4, 1) ≈ 0.180033270
+    @test Uchiyama.compute_dt(p, 8, 5, 2) ≈ 0.405573952
+    @test Uchiyama.compute_dt(p, 9, 5, 2) ≈ 0.367756020
+    @test Uchiyama.compute_dt(p, 8, 6, 1) ≈ 0.034544210
+    @test Uchiyama.compute_dt(p, 8, 7, 7) ≈ 0.885761939
 
 end
