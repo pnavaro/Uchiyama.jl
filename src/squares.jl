@@ -101,7 +101,6 @@ struct Squares <: Particles
            end
 
            vitesses = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-           n = length(q)
            v = [vitesses[rand(rng, 1:end)] for i in 1:n]
         end 
 
