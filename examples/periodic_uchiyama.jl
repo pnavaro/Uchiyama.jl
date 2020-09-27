@@ -14,16 +14,16 @@ c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-q, v = init_particles(rng, n, ϵ)
+squares = Squares(rng, n, ϵ)
 
-collisions = PeriodicCollisions(n, q, v, ϵ)
+collisions = PeriodicCollisions(squares)
 
 steps = 500
 pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
-     dt = step!(n, ϵ, q, v, collisions)
+     dt = step!(squares, collisions)
 
      p = plot(size  = (200,200), 
               xlims = (0,1), 
@@ -31,8 +31,8 @@ anim = @animate for _ in 1:steps
               grid  = false, 
               axis  = nothing, legend=false, framestyle = :box, widen = false)
 
-     scatter!( getindex.(q,1), 
-               getindex.(q,2), 
+     scatter!( getindex.(squares.q,1), 
+               getindex.(squares.q,2), 
                markershape  = :diamond, 
                markersize   = c, 
                aspect_ratio = :equal)

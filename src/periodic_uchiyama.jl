@@ -1,50 +1,6 @@
 using Random
 using LinearAlgebra
 
-function overlap( p, q, ϵ )
-
-   for r in q
-       all(abs.(p .- r) .< 2ϵ) && (return true)
-   end
-
-   return false
-
-end
-
-export init_particles
-
-function init_particles(rng, n, ϵ )
-
-    q = Vector{Float64}[]
-
-    push!(q, [0.5,0.5])
-
-    for i in 1:n-1
-
-        p = copy(q[1])
-        k = 0
-        while overlap(p, q, ϵ) && k < 1000
-            rand!(rng, p)
-            k += 1
-        end
-
-        if k < 1000
-           push!(q, p)
-        else
-           @error "echec du tirage $i"
-        end
-
-    end
-
-    vitesses = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    n = length(q)
-    v = [vitesses[rand(1:end)] for i in 1:n]
-
-    return q, v
-
-end
-
-
 function tempscoll(x, y, v, w, ϵ)
 
     deltat1 = Inf
@@ -108,15 +64,19 @@ const offset = [[0, 0], [1,  0], [-1,  0],
                 [0, 1], [0, -1], [-1,  1], 
                 [1, 1], [1, -1], [-1, -1]]
 
-function compute_dt!(i, n, q, v, ϵ, dt, fantome)
+function compute_dt!(i, squares, dt, fantome)
 
-    for j in 1:n
+    for j in 1:squares.n
         if i != j
             dt_local = Inf
             k = 0
             while (isinf(dt_local) && k < 9)
                 k += 1
-                dt_local = tempscoll(q[j] .+ offset[k], q[i], v[j], v[i], ϵ)
+                dt_local = tempscoll(squares.q[j] .+ offset[k], 
+                                     squares.q[i], 
+                                     squares.v[j], 
+                                     squares.v[i], 
+                                     squares.ϵ)
             end
 
             dt[i,j] = dt_local
@@ -134,24 +94,30 @@ struct PeriodicCollisions
     dt :: Array{Float64,2}
     fantome :: Array{Int, 2}
 
-    function PeriodicCollisions(n, q, v, ϵ)
+    function PeriodicCollisions( squares :: Squares)
 
-        dt = zeros(Float64, (n, n))
-        fantome = zeros(Int, (n, n))
+        #aij is stored in AP(i+j(j-1)/2) for $i \leq j$;
+
+        dt = zeros(Float64, (squares.n, squares.n))
+        fantome = zeros(Int, (squares.n, squares.n))
         fill!(dt, Inf)
         fill!(fantome, 0)
 
-        for k in 1:n
-            for l in (k+1):n
+        for i in 1:squares.n
+            for j in (i+1):squares.n
                 dt_local = Inf
-                i = 0
-                while (isinf(dt_local) && i < 9)
-                    i += 1
-                    dt_local = tempscoll(q[l] + offset[i], q[k], v[l], v[k], ϵ)
+                k = 0
+                while (isinf(dt_local) && k < 9)
+                    k += 1
+                    dt_local = tempscoll(squares.q[j] + offset[k], 
+                                         squares.q[i], 
+                                         squares.v[j], 
+                                         squares.v[i], 
+                                         squares.ϵ)
                 end
 
-                dt[k, l] = dt_local
-                fantome[k, l] = i
+                dt[i, j] = dt_local
+                fantome[i, j] = k
 
             end
         end
@@ -178,33 +144,33 @@ const rot = [0 -1; 1 0]
 
 export step!
 
-function step!(n, ϵ, q, v, collisions)
+function step!(squares, collisions)
 
     """ Compute smaller time step between two collisions """
 
     dt, num_fant, i1, i2 = dt_min_position(collisions)
 
-    for i in 1:n
-        qnew = q[i] .+ dt .* v[i]
-        q[i] = mod.(qnew, 1.)
+    for i in 1:squares.n
+        qnew = squares.q[i] .+ dt .* squares.v[i]
+        squares.q[i] = mod.(qnew, 1.)
     end
 
     """ Collide the two particles i1, i2 """
 
-    if v[i1]'v[i2] == 0
+    if squares.v[i1]'squares.v[i2] == 0
 
-        v[[i1,i2]] = v[[i2,i1]] # swap velocities
+        squares.v[[i1,i2]] = squares.v[[i2,i1]] # swap velocities
 
-    elseif v[i1]'v[i2] == -1
+    elseif squares.v[i1]'squares.v[i2] == -1
 
-        if (rot * v[i1])'*(q[i2] .+ offset[num_fant] .- q[i1]) < 0
-            v[i1] = rot * v[i1]
-            v[i2] = rot * v[i2]
-        elseif (rot * v[i1])'*(q[i2] .+ offset[num_fant] .- q[i1]) > 0
-            v[i1] = - rot * v[i1]
-            v[i2] = - rot * v[i2]
+        if (rot * squares.v[i1])'*(squares.q[i2] .+ offset[num_fant] .- squares.q[i1]) < 0
+            squares.v[i1] = rot * squares.v[i1]
+            squares.v[i2] = rot * squares.v[i2]
+        elseif (rot * squares.v[i1])'*(squares.q[i2] .+ offset[num_fant] .- squares.q[i1]) > 0
+            squares.v[i1] = - rot * squares.v[i1]
+            squares.v[i2] = - rot * squares.v[i2]
         else # very rare case
-            v[[i1,i2]] = v[[i2,i1]] # swap velocities
+            squares.v[[i1,i2]] = squares.v[[i2,i1]] # swap velocities
         end
 
     end
@@ -213,8 +179,8 @@ function step!(n, ϵ, q, v, collisions)
     collisions.dt[:, i1] .= Inf
     collisions.dt[:, i2] .= Inf
 
-    compute_dt!(i1, n, q, v, ϵ, collisions.dt, collisions.fantome)
-    compute_dt!(i2, n, q, v, ϵ, collisions.dt, collisions.fantome)
+    compute_dt!(i1, squares, collisions.dt, collisions.fantome)
+    compute_dt!(i2, squares, collisions.dt, collisions.fantome)
 
     return dt
 
