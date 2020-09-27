@@ -7,7 +7,7 @@ using Revise
 # +
 using Uchiyama
 
-n = 40 # number of particles
+n = 50 # number of particles
 ϵ = 0.02
 c = trunc(Int, 200ϵ) # marker size
 
