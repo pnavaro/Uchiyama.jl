@@ -73,7 +73,7 @@ function compute_dt( p :: HardSpheres, i, j, k = 1 )
 
     c = (δv'δz).^2 - (δv'δv) * (δz'δz - (2ϵ)^2)
 
-    if (δv'δz) >= 0
+    if δv'δz >= 0
         δt = Inf
     elseif c < 0
         δt = Inf
