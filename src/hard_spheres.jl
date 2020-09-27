@@ -149,9 +149,7 @@ function hs_particles(rng, n, ϵ)
             frein += 1
         end
 
-        if frein == 10000
-            print("Echec tirage initial")
-        end
+        frein == 10000 && (@error "Echec tirage initial")
 
         push!(q, p)
 
@@ -181,8 +179,8 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
         v[i2] = v[i2] - J * (q[i2] - q[i1]) / 2ϵ
 
         collisions.dt .-= tempsp
-        reset!( collisions.dt, i1)
-        reset!( collisions.dt, i2)
+        reset!(collisions.dt, i1)
+        reset!(collisions.dt, i2)
 
         walls.dt .-= tempsp
         walls.dt[i1,:] .= Inf
@@ -192,14 +190,10 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
         hscompute_dt(i2, n, q, v, ϵ, collisions.dt)
 
         t, i = hstempscollmur(q[i1], v[i1], ϵ)
-        if !isinf(t)
-            walls.dt[i1, i] = t
-        end
+        !isinf(t) && ( walls.dt[i1, i] = t)
 
         t, i = hstempscollmur(q[i2], v[i2], ϵ)
-        if !isinf(t)
-            walls.dt[i2, i] = t
-        end
+        !isinf(t) && ( walls.dt[i2, i] = t)
 
     else
 
@@ -218,9 +212,7 @@ function step!(n, ϵ, q, v, collisions::PCollision, walls::WCollision)
         hscompute_dt(j1, n, q, v, ϵ, collisions.dt)
 
         t, i = hstempscollmur(q[j1], v[j1], ϵ)
-        if !isinf(t)
-            walls.dt[j1, i] = t
-        end
+        !isinf(t) && (walls.dt[j1, i] = t)
 
     end
 
