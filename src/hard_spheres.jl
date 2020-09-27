@@ -17,10 +17,13 @@ function step!(hs :: HardSpheres, pc::ParticleCollisions, bc::BoxCollisions)
             hs.q[i] = hs.q[i] .+ tempsp .* hs.v[i]
         end
 
-        J = ((hs.v[i2] - hs.v[i1])'*(hs.q[i2] - hs.q[i1])) ./ 2ϵ
+        δv = hs.v[i2] - hs.v[i1]
+        δx = hs.q[i2] - hs.q[i1]
 
-        hs.v[i1] = hs.v[i1] + J * (hs.q[i2] - hs.q[i1]) ./ 2ϵ
-        hs.v[i2] = hs.v[i2] - J * (hs.q[i2] - hs.q[i1]) ./ 2ϵ
+        J = (δv'δx) ./ 2ϵ
+
+        hs.v[i1] = hs.v[i1] .+ J .* δx ./ 2ϵ
+        hs.v[i2] = hs.v[i2] .- J .* δx ./ 2ϵ
 
         pc.dt .-= tempsp
         reset!(pc, i1)
@@ -49,12 +52,10 @@ function step!(hs :: HardSpheres, pc::ParticleCollisions, bc::BoxCollisions)
 
         pc.dt .-= tempsm
         reset!(pc, j1)
+        compute_dt!(pc, j1, hs)
 
         bc.dt .-= tempsm
         reset!(bc, j1)
-
-        compute_dt!(pc, j1, hs)
-
         t, i = compute_dt(hs, j1)
         bc.dt[j1, i] = t
 
