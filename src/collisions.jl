@@ -145,6 +145,4 @@ end
 function reset!(pc :: PeriodicCollisions, i)
     pc.dt[i, :] .= Inf
     pc.dt[:, i] .= Inf
-    pc.fantome[i, :] .= 0
-    pc.fantome[:, i] .= 0
 end
