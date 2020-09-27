@@ -19,13 +19,6 @@ struct ParticleCollisions
 
 end
 
-function dt_min_position( collisions )
-    p = argmin(collisions.dt)
-    dt_min = collisions.dt[p]
-    return dt_min, p[1], p[2]
-end
-
-
 export BoxCollisions
 
 struct BoxCollisions
@@ -62,28 +55,33 @@ struct BoxCollisions
 
 end
 
+function reset!(bc :: BoxCollisions, i)
+    bc.dt[i, :] .= Inf
+end
+
+function compute_dt!(pc :: ParticleCollisions, i, particles :: Particles)
+
+    q_i = particles.q[i]
+    v_i = particles.v[i]
+    for j in 1:particles.n
+        if i != j
+            tcoll = particles(particles.q[j], q_i, particles.v[j], v_i)
+            if !isinf(tcoll)
+                dt[i, j] = tcoll
+            end
+        end
+    end
+end
+
+function dt_min_position( collisions )
+    p = argmin(collisions.dt)
+    dt_min = collisions.dt[p]
+    return dt_min, p[1], p[2]
+end
+
 const offset = [[0, 0], [1,  0], [-1,  0], 
                 [0, 1], [0, -1], [-1,  1], 
                 [1, 1], [1, -1], [-1, -1]]
-
-function compute_dt!(dt, fantome, i, p :: Particles)
-
-    for j in 1:p.n
-        if i != j
-            dt_local = Inf
-            k = 0
-            while (isinf(dt_local) && k < 9)
-                k += 1
-                dt_local = p(p.q[j] .+ offset[k], p.q[i], p.v[j], p.v[i])
-            end
-
-            dt[i,j] = dt_local
-            fantome[i,j] = k
-        end
-    end
-
-end
-
 
 export PeriodicCollisions
 
@@ -122,6 +120,24 @@ struct PeriodicCollisions
 
 end
 
+function compute_dt!(pc :: PeriodicCollisions, i, p :: Particles)
+
+    for j in 1:p.n
+        if i != j
+            dt_local = Inf
+            k = 0
+            while (isinf(dt_local) && k < 9)
+                k += 1
+                dt_local = p(p.q[j] .+ offset[k], p.q[i], p.v[j], p.v[i])
+            end
+
+            pc.dt[i,j] = dt_local
+            pc.fantome[i,j] = k
+        end
+    end
+
+end
+
 function dt_min_position(pc :: PeriodicCollisions)
     p = argmin(pc.dt)
     dt_min = pc.dt[p]
@@ -132,4 +148,6 @@ end
 function reset!(pc :: PeriodicCollisions, i)
     pc.dt[i, :] .= Inf
     pc.dt[:, i] .= Inf
+    pc.fantome[i, :] .= 0
+    pc.fantome[:, i] .= 0
 end

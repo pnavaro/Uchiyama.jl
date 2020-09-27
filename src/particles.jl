@@ -1,20 +1,5 @@
 abstract type Particles end
 
-function compute_dt!(dt, i, particles :: Particles)
-
-    q_i = particles.q[i]
-    v_i = particles.v[i]
-    for j in 1:particles.n
-        if i != j
-            tcoll = particles(particles.q[j], q_i, particles.v[j], v_i)
-            if !isinf(tcoll)
-                dt[i, j] = tcoll
-            end
-        end
-    end
-end
-
-
 export HardSpheres
 
 struct HardSpheres <: Particles

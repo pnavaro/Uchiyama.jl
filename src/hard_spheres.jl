@@ -3,8 +3,6 @@ const hs_wall_rebound = [
     v -> [ v[1], -v[2]]
 ]
 
-
-
 function step!(hs :: HardSpheres, pc::ParticleCollisions, bc::BoxCollisions)
 
     ϵ = hs.ϵ
@@ -19,17 +17,17 @@ function step!(hs :: HardSpheres, pc::ParticleCollisions, bc::BoxCollisions)
             hs.q[i] = hs.q[i] + tempsp * hs.v[i]
         end
 
-        J = ((hs.v[i2] - hs.v[i1])'*(hs.q[i2] - hs.q[i1])) / 2ϵ
-        hs.v[i1] = hs.v[i1] + J * (hs.q[i2] - hs.q[i1]) / 2ϵ
-        hs.v[i2] = hs.v[i2] - J * (hs.q[i2] - hs.q[i1]) / 2ϵ
+        J = ((hs.v[i2] - hs.v[i1])'*(hs.q[i2] - hs.q[i1])) ./ 2ϵ
+        hs.v[i1] = hs.v[i1] + J * (hs.q[i2] - hs.q[i1]) ./ 2ϵ
+        hs.v[i2] = hs.v[i2] - J * (hs.q[i2] - hs.q[i1]) ./ 2ϵ
 
         pc.dt .-= tempsp
-        reset!(pc.dt, i1)
-        reset!(pc.dt, i2)
+        reset!(pc, i1)
+        reset!(pc, i2)
 
         bc.dt .-= tempsp
-        bc.dt[i1,:] .= Inf
-        bc.dt[i2,:] .= Inf
+        reset!(bc, i1)
+        reset!(bc, i2)
 
         compute_dt!(pc.dt, i1, hs)
         compute_dt!(pc.dt, i2, hs)
@@ -49,12 +47,12 @@ function step!(hs :: HardSpheres, pc::ParticleCollisions, bc::BoxCollisions)
         hs.v[j1] = hs_wall_rebound[j2](hs.v[j1])
 
         pc.dt .-= tempsm
-        reset!(pc.dt, j1)
+        reset!(pc, j1)
 
         bc.dt .-= tempsm
-        bc.dt[j1,:] .= Inf
+        reset!(bc, j1)
 
-        compute_dt!(pc.dt, j1, hs)
+        compute_dt!(pc, j1, hs)
 
         t, i = hs(hs.q[j1], hs.v[j1])
         !isinf(t) && (bc.dt[j1, i] = t)
