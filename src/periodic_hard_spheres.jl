@@ -10,10 +10,13 @@ function step!(hs :: HardSpheres, pc :: PeriodicCollisions)
         hs.q[i] = mod.(qnew, 1.)
     end
 
-    J = ((hs.v[i2] .- hs.v[i1])'*(hs.q[i2] .+ offset[fant] .- hs.q[i1])) ./ 2ϵ
+    δv = hs.v[i2] .- hs.v[i1]
+    δx = hs.q[i2] .+ offset[fant] .- hs.q[i1]
 
-    hs.v[i1] = hs.v[i1] .+ J * (hs.q[i2] .+ offset[fant] .- hs.q[i1]) ./ 2ϵ
-    hs.v[i2] = hs.v[i2] .- J * (hs.q[i2] .+ offset[fant] .- hs.q[i1]) ./ 2ϵ
+    J = (δv'δx) ./ 2ϵ
+
+    hs.v[i1] = hs.v[i1] .+ J .* δx ./ 2ϵ
+    hs.v[i2] = hs.v[i2] .- J .* δx ./ 2ϵ
 
     pc.dt .-= dtmin
     reset!( pc, i1)
