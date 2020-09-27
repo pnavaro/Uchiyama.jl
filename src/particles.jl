@@ -1,56 +1,19 @@
 abstract type Particles end
 
-function overlap( p, q, ϵ )
+function compute_dt!(dt, i, particles :: Particles)
 
-   for r in q
-       all(abs.(p .- r) .< 2ϵ) && (return true)
-   end
-
-   return false
-
-end
-
-export Squares
-
-struct Squares <: Particles
-
-    n
-    q
-    v
-    ϵ
-
-    function Squares(rng, n, ϵ )
-
-        q = Vector{Float64}[]
-
-        push!(q, [0.5,0.5])
-
-        for i in 1:n-1
-
-            p = copy(q[1])
-            k = 0
-            while overlap(p, q, ϵ) && k < 1000
-                rand!(rng, p)
-                k += 1
+    q_i = particles.q[i]
+    v_i = particles.v[i]
+    for j in 1:particles.n
+        if i != j
+            tcoll = particles(particles.q[j], q_i, particles.v[j], v_i)
+            if !isinf(tcoll)
+                dt[i, j] = tcoll
             end
-
-            if k < 1000
-               push!(q, p)
-            else
-               @error "echec du tirage $i"
-            end
-
         end
-
-        vitesses = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-        n = length(q)
-        v = [vitesses[rand(rng, 1:end)] for i in 1:n]
-
-        new(n, q, v, ϵ)
-
     end
-
 end
+
 
 export HardSpheres
 
@@ -109,5 +72,58 @@ struct HardSpheres <: Particles
         new( n, q, v, ϵ )
     
     end
+
+end
+
+function (p :: HardSpheres)(x, y, v, w)
+
+    ϵ = p.ϵ
+    δv = v - w
+    δz = x - y
+    c = (δv'δz).^2 - (δv'δv) * (δz'δz - (2ϵ)^2)
+
+    if (δv'δz) >= 0
+        δt = Inf
+    elseif c < 0
+        δt = Inf
+    else
+        δt = -(δv'δz + sqrt(c)) / (δv'δv)
+    end
+    return δt
+
+end
+
+
+function (hs :: HardSpheres)(x, v)
+
+    ϵ = hs.ϵ
+
+    if v[1] > 0
+        s1 = (1 - ϵ - x[1]) / v[1]
+    elseif v[1] < 0
+        s1 = (ϵ - x[1]) / v[1]
+    elseif v[1] == 0
+        s1 = Inf
+    end
+
+    if v[2] > 0
+        s2 = (1 - ϵ - x[2]) / v[2]
+    elseif v[2] < 0
+        s2 = (ϵ - x[2]) / v[2]
+    elseif v[2] == 0
+        s2 = Inf
+    end
+
+    r = min(s1, s2)
+
+    if r == s1
+        s = s1
+        i = 1
+    else
+        s = s2
+        i = 2
+    end
+
+    return s, i
 
 end

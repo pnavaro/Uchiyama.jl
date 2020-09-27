@@ -7,14 +7,14 @@ using Revise
 # +
 using Uchiyama
 
-n = 200 # number of particles
-ϵ = 4 / n
+n = 50 # number of particles
+ϵ = 0.02
 c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-q, v = hs_particles(rng, n, ϵ)
-pc = PCollisionMatrix(n, q, v, ϵ)
+hs = HardSpheres(rng, n, ϵ)
+pc = PeriodicCollisions(hs)
 
 # +
 
@@ -23,7 +23,7 @@ pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
-    dt = step!(n, ϵ, q, v, pc)
+    dt = step!(hs, pc)
 
     p = plot(size  = (200,200), 
              xlims = (0,1), 
@@ -34,8 +34,8 @@ anim = @animate for _ in 1:steps
              legend=false, 
              widen = false)
     
-    scatter!( getindex.(q,1), 
-              getindex.(q,2), 
+    scatter!( getindex.(hs.q,1), 
+              getindex.(hs.q,2), 
               markershape  = :circle, 
               markersize   = c, 
               aspect_ratio = :equal)

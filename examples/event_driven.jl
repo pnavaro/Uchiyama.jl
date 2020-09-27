@@ -14,9 +14,9 @@ c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-q, v = box_particles(rng, n, ϵ)
-particles = ParticleCollisions(n, q, v, ϵ)
-walls = WallCollisions(n, q, v, ϵ)
+particles = Squares(rng, n, ϵ, option = :box)
+pc = ParticleCollisions(particles)
+bc = BoxCollisions(particles)
 
 # +
 
@@ -25,7 +25,7 @@ pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
-     dt = step!(n, ϵ, q, v, particles, walls)
+     dt = step!(particles, pc, bc)
 
      p = plot(size  = (200,200), 
               xlims = (-0.5,0.5), 
@@ -33,8 +33,8 @@ anim = @animate for _ in 1:steps
               grid  = false, 
               axis  = nothing, framestyle= :box, legend=false, widen = false)
      
-     scatter!( getindex.(q,1) .- getindex.(q,2), 
-               getindex.(q,2) .+ getindex.(q,1), 
+     scatter!( getindex.(particles.q,1) .- getindex.(particles.q,2), 
+               getindex.(particles.q,2) .+ getindex.(particles.q,1), 
                markershape  = :square, 
                markersize   = c, 
                aspect_ratio = :equal)
