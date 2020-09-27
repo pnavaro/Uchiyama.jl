@@ -1,5 +1,8 @@
 module Uchiyama
 
+using LinearAlgebra
+using Random
+
 include("particles.jl")
 include("squares.jl")
 include("collisions.jl")

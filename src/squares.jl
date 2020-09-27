@@ -35,7 +35,7 @@ function box_particles(rng, n, ϵ)
         overlap = 1
         while (overlap == 1) && frein < 10000
 
-            p0 = [2 * l1 * rand() - l1, 2 * l2 * rand() - l2]
+            p0 = [2 * l1 * rand(rng) - l1, 2 * l2 * rand(rng) - l2]
             p = J4 * p0
             p = p * (1 - 4 * ϵ) / sqrt(2)
             overlap2 = 0
@@ -56,7 +56,7 @@ function box_particles(rng, n, ϵ)
     end
 
     vitesses = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    v = [vitesses[rand(1:end)] for i in 1:n]
+    v = [vitesses[rand(rng,1:end)] for i in 1:n]
 
     return q, v
 
@@ -85,7 +85,7 @@ struct Squares <: Particles
 
            for i in 1:n-1
 
-               p = copy(q[1])
+               p = [0.5, 0.5]
                k = 0
                while overlap(p, q, ϵ) && k < 1000
                    rand!(rng, p)
@@ -112,11 +112,15 @@ struct Squares <: Particles
 end
 
 
-function (p :: Squares)(x, y, v, w)
+function compute_dt(p :: Squares, i, j, k = 1)
 
     ϵ = p.ϵ
     deltat1 = Inf
     deltat2 = Inf
+    x = p.q[i] .+ offset[k]
+    y = p.q[j]
+    v = p.v[i]
+    w = p.v[j]
 
     if (y - x)'v > 0.0 > (y - x)'w
 
@@ -171,9 +175,12 @@ function (p :: Squares)(x, y, v, w)
 
 end
 
-function (sq :: Squares)(x, v)
-    ϵ = sq.ϵ
+function compute_dt(p :: Squares, j)
+
+    ϵ = p.ϵ
     t = Inf
+    x = p.q[j]
+    v = p.v[j]
     i = 1
 
     if x[2] > 0 && v[1] == 1
@@ -203,5 +210,6 @@ function (sq :: Squares)(x, v)
     end
 
     return t, i 
+
 end
 

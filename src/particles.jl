@@ -60,11 +60,17 @@ struct HardSpheres <: Particles
 
 end
 
-function (p :: HardSpheres)(x, y, v, w)
+const offset = [[0, 0], [1,  0], [-1,  0], 
+                [0, 1], [0, -1], [-1,  1], 
+                [1, 1], [1, -1], [-1, -1]]
+
+function compute_dt( p :: HardSpheres, i, j, k = 1 )
 
     ϵ = p.ϵ
-    δv = v - w
-    δz = x - y
+
+    δz = p.q[i] .+ offset[k] .- p.q[j]
+    δv = p.v[i] .- p.v[j]
+
     c = (δv'δz).^2 - (δv'δv) * (δz'δz - (2ϵ)^2)
 
     if (δv'δz) >= 0
@@ -74,14 +80,17 @@ function (p :: HardSpheres)(x, y, v, w)
     else
         δt = -(δv'δz + sqrt(c)) / (δv'δv)
     end
+
     return δt
 
 end
 
 
-function (hs :: HardSpheres)(x, v)
+function compute_dt(hs :: HardSpheres, i)
 
     ϵ = hs.ϵ
+    x = hs.q[i]
+    v = hs.v[i]
 
     if v[1] > 0
         s1 = (1 - ϵ - x[1]) / v[1]

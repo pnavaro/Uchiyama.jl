@@ -11,7 +11,7 @@ struct ParticleCollisions
 
         for k in 1:p.n
             for l in (k+1):p.n
-                dt[k, l] = p(p.q[l], p.q[k], p.v[l], p.v[k])
+                dt[k, l] = compute_dt(p, l, k)
             end
         end
         new( dt )
@@ -31,7 +31,7 @@ struct BoxCollisions
         fill!(dt, Inf)
 
         for k in 1:p.n
-            t, m = p(p.q[k], p.v[k])
+            t, m = compute_dt(p, k)
             dt[k, m] = t
         end
 
@@ -45,7 +45,7 @@ struct BoxCollisions
         fill!(dt, Inf)
 
         for k in 1:p.n
-            t, m = p(p.q[k], p.v[k])
+            t, m = compute_dt(p, k)
             !isinf(t) && (dt[k, m] = t)
         end
 
@@ -61,11 +61,9 @@ end
 
 function compute_dt!(pc :: ParticleCollisions, i, particles :: Particles)
 
-    q_i = particles.q[i]
-    v_i = particles.v[i]
     for j in 1:particles.n
         if i != j
-            tcoll = particles(particles.q[j], q_i, particles.v[j], v_i)
+            tcoll = compute_dt(particles, j, i)
             if !isinf(tcoll)
                 dt[i, j] = tcoll
             end
@@ -79,9 +77,6 @@ function dt_min_position( collisions )
     return dt_min, p[1], p[2]
 end
 
-const offset = [[0, 0], [1,  0], [-1,  0], 
-                [0, 1], [0, -1], [-1,  1], 
-                [1, 1], [1, -1], [-1, -1]]
 
 export PeriodicCollisions
 
@@ -105,7 +100,7 @@ struct PeriodicCollisions
                 k = 0
                 while (isinf(dt_local) && k < 9)
                     k += 1
-                    dt_local = p(p.q[j] + offset[k], p.q[i], p.v[j], p.v[i])
+                    dt_local = compute_dt(p, j, i, k)
                 end
 
                 dt[i, j] = dt_local
@@ -128,7 +123,7 @@ function compute_dt!(pc :: PeriodicCollisions, i, p :: Particles)
             k = 0
             while (isinf(dt_local) && k < 9)
                 k += 1
-                dt_local = p(p.q[j] .+ offset[k], p.q[i], p.v[j], p.v[i])
+                dt_local = compute_dt(p, j, i, k)
             end
 
             pc.dt[i,j] = dt_local
