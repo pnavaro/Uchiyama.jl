@@ -9,6 +9,16 @@ struct HardSpheres <: Particles
     v
     ϵ
 
+    function HardSpheres(q :: Vector{Vector{Float64}}, v, ϵ :: AbstractFloat)
+
+        n = length(q)
+
+        @assert n == length(v)
+
+        new(n, q, v, ϵ)
+
+    end
+
     function HardSpheres(rng, n, ϵ)
     
         q = Vector{Float64}[]
@@ -111,13 +121,9 @@ function compute_dt(hs :: HardSpheres, i)
     r = min(s1, s2)
 
     if r == s1
-        s = s1
-        i = 1
+        return s1, 1
     else
-        s = s2
-        i = 2
+        return s2, 2
     end
-
-    return s, i
 
 end
