@@ -62,16 +62,16 @@ function box_particles(rng, n, ϵ)
 
 end
 
-export Squares
+export SquareParticles
 
-struct Squares <: Particles
+struct SquareParticles <: Particles
 
     n
     q
     v
     ϵ
 
-    function Squares(rng, n, ϵ; option = :none )
+    function SquareParticles(rng, n, ϵ; option = :none )
 
         if option == :box
 
@@ -111,7 +111,7 @@ struct Squares <: Particles
 end
 
 
-function compute_dt(p :: Squares, i, j, k = 1)
+function compute_dt(p :: SquareParticles, i, j, k = 1)
 
     ϵ = p.ϵ
     deltat1 = Inf
@@ -174,7 +174,7 @@ function compute_dt(p :: Squares, i, j, k = 1)
 
 end
 
-function compute_dt(p :: Squares, j)
+function compute_dt(p :: SquareParticles, j)
 
     ϵ = p.ϵ
     t = Inf

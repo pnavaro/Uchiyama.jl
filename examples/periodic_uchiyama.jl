@@ -14,7 +14,7 @@ c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-squares = Squares(rng, n, ϵ)
+squares = SquareParticles(rng, n, ϵ)
 
 collisions = PeriodicCollisions(squares)
 

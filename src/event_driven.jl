@@ -6,7 +6,7 @@ const wall_rebound = [
 
 
 
-function step!(sq :: Squares, pc, bc)
+function step!(sq :: SquareParticles, pc, bc)
 
     n = sq.n
     ϵ = sq.ϵ

@@ -44,7 +44,7 @@ struct BoxCollisions
 
     end
 
-    function BoxCollisions( p :: Squares )
+    function BoxCollisions( p :: SquareParticles )
 
         dt = zeros(p.n, 4)
         fill!(dt, Inf)

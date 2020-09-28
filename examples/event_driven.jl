@@ -14,7 +14,7 @@ c = trunc(Int, 200ϵ) # marker size
 
 rng = MersenneTwister(1234)
 
-particles = Squares(rng, n, ϵ, option = :box)
+particles = SquareParticles(rng, n, ϵ, option = :box)
 pc = ParticleCollisions(particles)
 bc = BoxCollisions(particles)
 

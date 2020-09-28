@@ -5,7 +5,7 @@
 
     rng = MersenneTwister(42)
 
-    p = Squares(rng, n, ϵ)
+    p = SquareParticles(rng, n, ϵ)
 
     q = [[0.5       , 0.5       ],
          [0.20006862, 0.38139954],

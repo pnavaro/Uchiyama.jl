@@ -12,7 +12,7 @@ using Uchiyama
    v = [[0,1], [0,-1]]
 
    rng = MersenneTwister(42)
-   p = Squares(rng, n, ϵ)
+   p = SquareParticles(rng, n, ϵ)
    for i in 1:n
        p.q[i] = q[i]
        p.v[i] = v[i]
@@ -69,7 +69,7 @@ end
      ϵ = 0.01
      rng = MersenneTwister(1234)
      
-     sq = Squares(rng, n, ϵ)
+     sq = SquareParticles(rng, n, ϵ)
      @test true
      hs = HardSpheres(rng, n, ϵ)
      @test true
