@@ -14,18 +14,16 @@ struct PeriodicCollisions
         fill!(dt, Inf)
 
         for i in 1:p.n
-            for j in 1:p.n
-                if i != j 
-                   dt_local = Inf
-                   k = 0
-                   while (isinf(dt_local) && k < 9)
-                       k += 1
-                       dt_local = compute_dt(p, j, i, k)
-                   end
-
-                   dt[i, j] = dt_local
-                   fantome[i, j] = k
+            for j in (i+1):p.n
+                dt_local = Inf
+                k = 0
+                while (isinf(dt_local) && k < 9)
+                    k += 1
+                    dt_local = compute_dt(p, j, i, k)
                 end
+
+                dt[i, j] = dt_local
+                fantome[i, j] = k
             end
         end
 
