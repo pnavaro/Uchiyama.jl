@@ -3,6 +3,8 @@ using Random
 using LinearAlgebra
 using Uchiyama
 
+include("test_periodic_hard_spheres.jl")
+
 @testset "step" begin
 
 
