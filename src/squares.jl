@@ -71,6 +71,17 @@ struct SquareParticles <: Particles
     v
     ϵ
 
+    function SquareParticles(q :: Vector{Vector{Float64}}, v, ϵ :: AbstractFloat)
+
+        n = length(q)
+
+        @assert n == length(v)
+
+        new(n, q, v, ϵ)
+
+    end
+
+
     function SquareParticles(rng, n, ϵ; option = :none )
 
         if option == :box
