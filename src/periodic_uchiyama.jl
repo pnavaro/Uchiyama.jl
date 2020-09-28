@@ -7,8 +7,7 @@ function step!(sq, pc)
     dtmin, fant, i1, i2 = dt_min_position(pc)
 
     for i in 1:sq.n
-        qnew = sq.q[i] .+ dtmin .* sq.v[i]
-        sq.q[i] = mod.(qnew, 1.)
+        sq.q[i] = mod.(sq.q[i] .+ dtmin .* sq.v[i], 1)
     end
 
     if sq.v[i1]'sq.v[i2] == 0
