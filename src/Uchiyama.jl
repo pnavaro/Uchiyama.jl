@@ -6,6 +6,7 @@ using Random
 include("particles.jl")
 include("squares.jl")
 include("collisions.jl")
+include("periodic_collisions.jl")
 include("periodic_uchiyama.jl")
 include("hard_spheres.jl")
 include("event_driven.jl")
