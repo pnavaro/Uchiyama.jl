@@ -88,75 +88,38 @@ function main( nstep )
     anim = @animate for step in 1:nstep
     
         m, n = Tuple(argmin(Collisions))
+        dt = Collisions[m,n]
         
         if Fantome[m,n] == 1  
     
-            qa1 = q[n] + [ 0, 0] + Collisions[m,n]*v[n]
-            qa2 = q[n] + [ 1, 0] + Collisions[m,n]*v[n]
-            qa3 = q[n] + [-1, 0] + Collisions[m,n]*v[n]
-            qa4 = q[n] + [ 0, 1] + Collisions[m,n]*v[n]
-            qa5 = q[n] + [ 0,-1] + Collisions[m,n]*v[n]
-            qa6 = q[n] + [-1, 1] + Collisions[m,n]*v[n]
-            qa7 = q[n] + [ 1, 1] + Collisions[m,n]*v[n]
-            qa8 = q[n] + [ 1,-1] + Collisions[m,n]*v[n]
-            qa9 = q[n] + [-1,-1] + Collisions[m,n]*v[n]
-            qb  = q[m] + Collisions[m,n] .* v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+            qb = q[m] + dt .* v[m]
+            vr2 = argmin([norm(qx-qb) for qx in qa])
     
-            vraicoll=[norm(qa1-qb),norm(qa2-qb),norm(qa3-qb),
-                      norm(qa4-qb),norm(qa5-qb),norm(qa6-qb),
-                      norm(qa7-qb),norm(qa8-qb),norm(qa9-qb)]
+            q[n]=qa[vr2]
+            q[m]=qb
     
-            vr2 = argmin(vraicoll)
-    
-            if vr2==1
-                q[n]=qa1   
-                q[m]=qb
-            elseif vr2 ==2
-                q[n]=qa2   
-                q[m]=qb
-            elseif vr2==3
-                q[n]=qa3   
-                q[m]=qb
-            elseif vr2==4
-                q[n]=qa4   
-                q[m]=qb
-            elseif vr2==5
-                q[n]=qa5   
-                q[m]=qb
-             elseif vr2==6
-                q[n]=qa6   
-                q[m]=qb
-             elseif vr2==7
-                q[n]=qa7   
-                q[m]=qb
-             elseif vr2==8
-                q[n]=qa8   
-                q[m]=qb
-             elseif vr2==9
-                q[n]=qa9   
-                q[m]=qb 
-             end
-    
-             J = (dot(v[n]-v[m],q[n]-q[m]))/(2ϵ)
-             v[1,m]=v[1,m] + J* (q[1,n]-q[1,m])/(2ϵ)
-             v[2,m]=v[2,m] + J* (q[2,n]-q[2,m])/(2ϵ)
-             v[1,n]=v[1,n] - J* (q[1,n]-q[1,m])/(2ϵ)
-             v[2,n]=v[2,n] - J* (q[2,n]-q[2,m])/(2ϵ)
-             q[n] = mod.(q[n],1)
-             q[m] = mod.(q[m],1)
+            J = (dot(v[n]-v[m],q[n]-q[m]))/(2ϵ)
+            v[1,m]=v[1,m] + J* (q[1,n]-q[1,m])/(2ϵ)
+            v[2,m]=v[2,m] + J* (q[2,n]-q[2,m])/(2ϵ)
+            v[1,n]=v[1,n] - J* (q[1,n]-q[1,m])/(2ϵ)
+            v[2,n]=v[2,n] - J* (q[2,n]-q[2,m])/(2ϵ)
+            q[n] = mod.(q[n],1)
+            q[m] = mod.(q[m],1)
          
          elseif Fantome[m,n] == 2 
     
-             qa1 = q[n] + [ 0, 0] + Collisions[m,n]*v[n]
-             qa2 = q[n] + [ 1, 0] + Collisions[m,n]*v[n]
-             qa3 = q[n] + [-1, 0] + Collisions[m,n]*v[n]
-             qa4 = q[n] + [ 0, 1] + Collisions[m,n]*v[n]
-             qa5 = q[n] + [ 0,-1] + Collisions[m,n]*v[n]
-             qa6 = q[n] + [-1, 1] + Collisions[m,n]*v[n]
-             qa7 = q[n] + [ 1, 1] + Collisions[m,n]*v[n]
-             qa8 = q[n] + [ 1,-1] + Collisions[m,n]*v[n]
-             qa9 = q[n] + [-1;-1] + Collisions[m,n]*v[n]
-             qb  = q[m] + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1 = q[n] + [ 0, 0] + dt*v[n]
+             qa2 = q[n] + [ 1, 0] + dt*v[n]
+             qa3 = q[n] + [-1, 0] + dt*v[n]
+             qa4 = q[n] + [ 0, 1] + dt*v[n]
+             qa5 = q[n] + [ 0,-1] + dt*v[n]
+             qa6 = q[n] + [-1, 1] + dt*v[n]
+             qa7 = q[n] + [ 1, 1] + dt*v[n]
+             qa8 = q[n] + [ 1,-1] + dt*v[n]
+             qa9 = q[n] + [-1;-1] + dt*v[n]
+             qb  = q[m] + dt*v[m]
     
              vraicoll=[norm(qa1-qb),norm(qa2-qb),norm(qa3-qb),
                        norm(qa4-qb),norm(qa5-qb),norm(qa6-qb),
@@ -202,16 +165,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 3 
      
-             qa1= q[n] + [ 0, 0] + Collisions[m,n]*v[n]
-             qa2= q[n] + [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n] + [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n] + [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n] + [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n] + [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n] + [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n] + [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n] + [-1,-1] + Collisions[m,n]*v[n]
-             qb = q[m] + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n] + [ 0, 0] + dt*v[n]
+             qa2= q[n] + [ 1, 0] + dt*v[n]
+             qa3= q[n] + [-1, 0] + dt*v[n]
+             qa4= q[n] + [ 0, 1] + dt*v[n]
+             qa5= q[n] + [ 0,-1] + dt*v[n]
+             qa6= q[n] + [-1, 1] + dt*v[n]
+             qa7= q[n] + [ 1, 1] + dt*v[n]
+             qa8= q[n] + [ 1,-1] + dt*v[n]
+             qa9= q[n] + [-1,-1] + dt*v[n]
+             qb = q[m] + dt*v[m]
     
              vraicoll=[norm(qa1-qb), norm(qa2-qb), norm(qa3-qb),
                        norm(qa4-qb), norm(qa5-qb), norm(qa6-qb),
@@ -260,16 +224,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 4
      
-             qa1= q[n] + Collisions[m,n]*v[n]
-             qa2= q[n] + [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n] + [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n] + [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n] + [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n] + [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n] + [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n] + [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n] + [-1,-1] + Collisions[m,n]*v[n]
-             qb= q[m]  + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n] + dt*v[n]
+             qa2= q[n] + [ 1, 0] + dt*v[n]
+             qa3= q[n] + [-1, 0] + dt*v[n]
+             qa4= q[n] + [ 0, 1] + dt*v[n]
+             qa5= q[n] + [ 0,-1] + dt*v[n]
+             qa6= q[n] + [-1, 1] + dt*v[n]
+             qa7= q[n] + [ 1, 1] + dt*v[n]
+             qa8= q[n] + [ 1,-1] + dt*v[n]
+             qa9= q[n] + [-1,-1] + dt*v[n]
+             qb= q[m]  + dt*v[m]
              vraicoll=[norm(qa1-qb),norm(qa2-qb),norm(qa3-qb),
                        norm(qa4-qb),norm(qa5-qb),norm(qa6-qb),
                        norm(qa7-qb),norm(qa8-qb),norm(qa9-qb)]
@@ -315,16 +280,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 5
      
-             qa1= q[n]+ [ 0, 0] + Collisions[m,n]*v[n]
-             qa2= q[n]+ [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n]+ [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n]+ [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n]+ [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n]+ [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n]+ [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n]+ [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n]+ [-1,-1] + Collisions[m,n]*v[n]
-             qb = q[m] + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n]+ [ 0, 0] + dt*v[n]
+             qa2= q[n]+ [ 1, 0] + dt*v[n]
+             qa3= q[n]+ [-1, 0] + dt*v[n]
+             qa4= q[n]+ [ 0, 1] + dt*v[n]
+             qa5= q[n]+ [ 0,-1] + dt*v[n]
+             qa6= q[n]+ [-1, 1] + dt*v[n]
+             qa7= q[n]+ [ 1, 1] + dt*v[n]
+             qa8= q[n]+ [ 1,-1] + dt*v[n]
+             qa9= q[n]+ [-1,-1] + dt*v[n]
+             qb = q[m] + dt*v[m]
              vraicoll=[norm(qa1-qb,2),norm(qa2-qb,2),norm(qa3-qb,2),
                        norm(qa4-qb,2),norm(qa5-qb,2),norm(qa6-qb,2),
                        norm(qa7-qb,2),norm(qa8-qb,2),norm(qa9-qb,2)]
@@ -369,17 +335,18 @@ function main( nstep )
          
           elseif Fantome[m,n] == 6
      
-              qa1= q[n]+ [ 0, 0] + Collisions[m,n]*v[n]
-              qa2= q[n]+ [ 1, 0] + Collisions[m,n]*v[n]
-              qa3= q[n]+ [-1, 0] + Collisions[m,n]*v[n]
-              qa4= q[n]+ [ 0, 1] + Collisions[m,n]*v[n]
-              qa5= q[n]+ [ 0,-1] + Collisions[m,n]*v[n]
-              qa6= q[n]+ [-1, 1] + Collisions[m,n]*v[n]
-              qa7= q[n]+ [ 1, 1] + Collisions[m,n]*v[n]
-              qa8= q[n]+ [ 1,-1] + Collisions[m,n]*v[n]
-              qa9= q[n]+ [-1,-1] + Collisions[m,n]*v[n]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+              qa1= q[n]+ [ 0, 0] + dt*v[n]
+              qa2= q[n]+ [ 1, 0] + dt*v[n]
+              qa3= q[n]+ [-1, 0] + dt*v[n]
+              qa4= q[n]+ [ 0, 1] + dt*v[n]
+              qa5= q[n]+ [ 0,-1] + dt*v[n]
+              qa6= q[n]+ [-1, 1] + dt*v[n]
+              qa7= q[n]+ [ 1, 1] + dt*v[n]
+              qa8= q[n]+ [ 1,-1] + dt*v[n]
+              qa9= q[n]+ [-1,-1] + dt*v[n]
     
-              qb= q[m] + Collisions[m,n]*v[m]
+              qb= q[m] + dt*v[m]
     
               vraicoll=[norm(qa1-qb),norm(qa2-qb),norm(qa3-qb),
                         norm(qa4-qb),norm(qa5-qb),norm(qa6-qb),
@@ -425,16 +392,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 7 
      
-             qa1= q[n]+ [ 0, 0] + Collisions[m,n]*v[n]
-             qa2= q[n]+ [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n]+ [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n]+ [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n]+ [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n]+ [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n]+ [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n]+ [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n]+ [-1,-1] + Collisions[m,n]*v[n]
-             qb= q[m] + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n]+ [ 0, 0] + dt*v[n]
+             qa2= q[n]+ [ 1, 0] + dt*v[n]
+             qa3= q[n]+ [-1, 0] + dt*v[n]
+             qa4= q[n]+ [ 0, 1] + dt*v[n]
+             qa5= q[n]+ [ 0,-1] + dt*v[n]
+             qa6= q[n]+ [-1, 1] + dt*v[n]
+             qa7= q[n]+ [ 1, 1] + dt*v[n]
+             qa8= q[n]+ [ 1,-1] + dt*v[n]
+             qa9= q[n]+ [-1,-1] + dt*v[n]
+             qb= q[m] + dt*v[m]
              vraicoll=[norm(qa1-qb,2),norm(qa2-qb,2),norm(qa3-qb,2),
                        norm(qa4-qb,2),norm(qa5-qb,2),norm(qa6-qb,2),
                        norm(qa7-qb,2),norm(qa8-qb,2),norm(qa9-qb,2)]
@@ -479,16 +447,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 8    
      
-             qa1= q[n]+ [ 0, 0] + Collisions[m,n]*v[n]
-             qa2= q[n]+ [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n]+ [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n]+ [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n]+ [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n]+ [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n]+ [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n]+ [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n]+ [-1,-1] + Collisions[m,n]*v[n]
-             qb= q[m] + Collisions[m,n] .* v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n]+ [ 0, 0] + dt*v[n]
+             qa2= q[n]+ [ 1, 0] + dt*v[n]
+             qa3= q[n]+ [-1, 0] + dt*v[n]
+             qa4= q[n]+ [ 0, 1] + dt*v[n]
+             qa5= q[n]+ [ 0,-1] + dt*v[n]
+             qa6= q[n]+ [-1, 1] + dt*v[n]
+             qa7= q[n]+ [ 1, 1] + dt*v[n]
+             qa8= q[n]+ [ 1,-1] + dt*v[n]
+             qa9= q[n]+ [-1,-1] + dt*v[n]
+             qb= q[m] + dt .* v[m]
              vraicoll=[norm(qa1-qb,2),norm(qa2-qb,2),norm(qa3-qb,2),
                        norm(qa4-qb,2),norm(qa5-qb,2),norm(qa6-qb,2),
                        norm(qa7-qb,2),norm(qa8-qb,2),norm(qa9-qb,2)]
@@ -533,16 +502,17 @@ function main( nstep )
          
          elseif Fantome[m,n] == 9
      
-             qa1= q[n]+ [ 0, 0] + Collisions[m,n]*v[n]
-             qa2= q[n]+ [ 1, 0] + Collisions[m,n]*v[n]
-             qa3= q[n]+ [-1, 0] + Collisions[m,n]*v[n]
-             qa4= q[n]+ [ 0, 1] + Collisions[m,n]*v[n]
-             qa5= q[n]+ [ 0,-1] + Collisions[m,n]*v[n]
-             qa6= q[n]+ [-1, 1] + Collisions[m,n]*v[n]
-             qa7= q[n]+ [ 1, 1] + Collisions[m,n]*v[n]
-             qa8= q[n]+ [ 1,-1] + Collisions[m,n]*v[n]
-             qa9= q[n]+ [-1,-1] + Collisions[m,n]*v[n]
-             qb= q[m] + Collisions[m,n]*v[m]
+            qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
+             qa1= q[n]+ [ 0, 0] + dt*v[n]
+             qa2= q[n]+ [ 1, 0] + dt*v[n]
+             qa3= q[n]+ [-1, 0] + dt*v[n]
+             qa4= q[n]+ [ 0, 1] + dt*v[n]
+             qa5= q[n]+ [ 0,-1] + dt*v[n]
+             qa6= q[n]+ [-1, 1] + dt*v[n]
+             qa7= q[n]+ [ 1, 1] + dt*v[n]
+             qa8= q[n]+ [ 1,-1] + dt*v[n]
+             qa9= q[n]+ [-1,-1] + dt*v[n]
+             qb= q[m] + dt*v[m]
              vraicoll=[norm(qa1-qb),norm(qa2-qb),norm(qa3-qb),
                        norm(qa4-qb),norm(qa5-qb),norm(qa6-qb),
                        norm(qa7-qb),norm(qa8-qb),norm(qa9-qb)]
@@ -589,28 +559,28 @@ function main( nstep )
          
          if m<n
             for i=1:m-1
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
             for i=m+1:n-1
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
             for i=n+1:N
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
         elseif n<m
             for i=1:n-1
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
             for i=n+1:m-1
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
             for i=m+1:N
-                q[i]=q[i]+ Collisions[m,n]*v[i]
+                q[i]=q[i]+ dt*v[i]
                 q[i]=mod.(q[i],1)
             end
         end
@@ -630,7 +600,7 @@ function main( nstep )
               aspect_ratio = :equal)
 
          
-        Collisions .-= Collisions[m,n]
+        Collisions .-= dt
         Collisions[m,:] .= Inf
         Collisions[n,:] .= Inf
         Collisions[:,m] .= Inf
@@ -733,4 +703,4 @@ function main( nstep )
     gif(anim, joinpath(@__DIR__, "hs_periodic.gif"), fps = 10)
 end
 
-main(100)
+@time main(100)
