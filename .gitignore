@@ -7,3 +7,15 @@ examples/.ipynb_checkpoints/periodic_uchiyama-checkpoint.jl
 Manifest.toml
 examples/.ipynb_checkpoints/
 docs/Manifest.toml
+docs/src/event_driven.md
+docs/src/hard_spheres.md
+docs/src/periodic_hard_spheres.md
+docs/src/periodic_uchiyama.md
+docs/src/event_driven.gif
+docs/src/event_driven.ipynb
+docs/src/hard_spheres.gif
+docs/src/hard_spheres.ipynb
+docs/src/periodic_hard_spheres.gif
+docs/src/periodic_hard_spheres.ipynb
+docs/src/periodic_uchiyama.gif
+docs/src/periodic_uchiyama.ipynb
