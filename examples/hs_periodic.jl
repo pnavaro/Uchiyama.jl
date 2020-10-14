@@ -35,7 +35,6 @@ function main( nstep )
         q[klm] = p
     end
     
-    
     offset = [[0, 0], [1,  0], [-1,  0], 
               [0, 1], [0, -1], [-1,  1], 
               [1, 1], [1, -1], [-1, -1]]
@@ -65,24 +64,15 @@ function main( nstep )
     Collisions = Inf .* ones(N,N)
     Fantome = zeros(Int, N,N)
     
-    for k=1:N
-        for l=k+1:N
-            t1 = compute_dt(q[l]+[ 0, 0], q[k], v[l], v[k])
-            t2 = compute_dt(q[l]+[ 1, 0], q[k], v[l], v[k])
-            t3 = compute_dt(q[l]+[-1, 0], q[k], v[l], v[k])
-            t4 = compute_dt(q[l]+[ 0, 1], q[k], v[l], v[k])
-            t5 = compute_dt(q[l]+[ 0,-1], q[k], v[l], v[k])
-            t6 = compute_dt(q[l]+[-1, 1], q[k], v[l], v[k]) 
-            t7 = compute_dt(q[l]+[ 1, 1], q[k], v[l], v[k])
-            t8 = compute_dt(q[l]+[ 1,-1], q[k], v[l], v[k])
-            t9 = compute_dt(q[l]+[-1,-1], q[k], v[l], v[k])
-            a  = [t1,t2,t3,t4,t5,t6,t7,t8,t9]
-            Collisions[k,l] = minimum(a)
-            if isinf(Collisions[k,l])
-                Fantome[k,l] = 0
-            else
-                Fantome[k,l] = argmin(a)
-            end
+    for k=1:N, l=k+1:N
+
+        t = [compute_dt(q[l]+offset[i],q[k],v[l],v[k]) for i in 1:9]
+
+        Collisions[k,l] = minimum(t)
+        if isinf(Collisions[k,l])
+            Fantome[k,l] = 0
+        else
+            Fantome[k,l] = argmin(t)
         end
     end
     
@@ -94,16 +84,14 @@ function main( nstep )
         if Fantome[m,n] > 0
             qa = [q[n] + offset[k] + dt*v[n] for k in 1:9]
             qb = q[m] + dt .* v[m]
-            vr2 = argmin([norm(qx-qb) for qx in qa])
+            vr = argmin([norm(qx-qb) for qx in qa])
     
-            q[n]=qa[vr2]
-            q[m]=qb
+            q[n] = qa[vr]
+            q[m] = qb
     
-            J = (dot(v[n]-v[m],q[n]-q[m]))/(2ϵ)
-            v[1,m]=v[1,m] + J* (q[1,n]-q[1,m])/(2ϵ)
-            v[2,m]=v[2,m] + J* (q[2,n]-q[2,m])/(2ϵ)
-            v[1,n]=v[1,n] - J* (q[1,n]-q[1,m])/(2ϵ)
-            v[2,n]=v[2,n] - J* (q[2,n]-q[2,m])/(2ϵ)
+            J = (dot(v[n]-v[m],q[n]-q[m]))/ 2ϵ
+            v[m] = v[m] + J * (q[n]-q[m]) / 2ϵ
+            v[n] = v[n] - J * (q[n]-q[m]) / 2ϵ
             q[n] = mod.(q[n],1)
             q[m] = mod.(q[m],1)
         end
