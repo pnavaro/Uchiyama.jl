@@ -12,7 +12,7 @@ examples_dir = joinpath(@__DIR__, "..", "examples")
 for example in examples
     jl_file = joinpath(examples_dir, example)
     Literate.markdown(jl_file, output, documenter=true)
-    Literate.notebook(jl_file, output)
+    Literate.notebook(jl_file, output, execute=false)
     #Literate.script(EXAMPLE, OUTPUT)
 end
 
