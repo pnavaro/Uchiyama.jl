@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 using Plots
 using Random
 using ProgressMeter
@@ -18,7 +19,7 @@ pc = PeriodicCollisions(hs)
 
 # +
 
-steps = 200
+steps = 1000
 pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
@@ -42,7 +43,7 @@ anim = @animate for _ in 1:steps
 
     next!(pbar)
 
-end
+end every 10
 # -
 
 gif(anim, joinpath(@__DIR__, "periodic_hard_spheres.gif"), fps = 20)

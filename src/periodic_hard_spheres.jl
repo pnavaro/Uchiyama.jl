@@ -6,6 +6,7 @@ function step!(hs :: HardSpheres, pc :: PeriodicCollisions)
     dtmin, fant, i1, i2 = dt_min_position(pc)
 
     if fant > 0
+
        qa = [hs.q[i2] + offset[k] + dtmin*hs.v[i2] for k in 1:9]
        qb = hs.q[i1] + dtmin .* hs.v[i1]
        vr = argmin([norm(qx-qb) for qx in qa])
