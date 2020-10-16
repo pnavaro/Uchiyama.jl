@@ -11,3 +11,6 @@ This code is based on [Nathalie Ayi](https://www.ljll.math.upmc.fr/~ayi)'s work.
 
 ![](examples/event_driven.gif)
 ![](examples/hard_spheres.gif)
+
+![](examples/periodic_uchiyama.gif)
+![](examples/periodic_hard_spheres.gif)

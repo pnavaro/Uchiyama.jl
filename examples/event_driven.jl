@@ -20,7 +20,7 @@ bc = BoxCollisions(particles)
 
 # +
 
-steps = 500
+steps = 1000
 pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
@@ -40,9 +40,9 @@ anim = @animate for _ in 1:steps
                aspect_ratio = :equal)
      next!(pbar)
 
-end
+end every 10
 # -
 
-gif(anim, joinpath(@__DIR__, "event_driven.gif"), fps = 20)
+gif(anim, joinpath(@__DIR__, "event_driven.gif"), fps = 10)
 
 
