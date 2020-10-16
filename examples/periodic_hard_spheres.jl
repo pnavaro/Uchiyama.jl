@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+# # Hard spheres in periodic domain
+
+
 using Plots
 using Random
 using ProgressMeter
