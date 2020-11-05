@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: PkgPage
 on:
   push:
     branches:
@@ -15,10 +15,8 @@ jobs:
       uses: julia-actions/setup-julia@v1
       with:
         version: 1.5
-    - run: julia --project -e '
+    - run: julia -e '
             using Pkg;
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate();
             Pkg.add(["NodeJS", "PkgPage", "DataFrames"]);
             using NodeJS;
             run(`$(npm_cmd()) install highlight.js purgecss`);
