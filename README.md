@@ -1,6 +1,5 @@
 # Uchiyama.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://pnavaro.github.io/Uchiyama.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pnavaro.github.io/Uchiyama.jl/dev)
 [![PkgPage](https://github.com/pnavaro/Uchiyama.jl/workflows/PkgPage/badge.svg)](https://pnavaro.github.io/Uchiyama.jl)
 [![Build Status](https://github.com/pnavaro/Uchiyama.jl/workflows/CI/badge.svg)](https://github.com/pnavaro/Uchiyama.jl/actions)
