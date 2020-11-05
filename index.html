@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- META -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Nathalie Ayi and Pierre Navaro">
+  <title>Uchiyama.jl</title>
+
+  <link rel="icon" type="image/png"  href="/Uchiyama.jl/assets/favicon.ico">
+
+  <!-- CSS -->
+  
+   <link rel="stylesheet" href="/Uchiyama.jl/libs/highlight/styles/atom-one-dark.css">
+   
+  <link rel="stylesheet" href="/Uchiyama.jl/css/bootstrap.min.css">
+  <style>.bg-primary {
+  background-color: #3f6388 !important;
+}
+
+a {
+  color: #2669DD;
+}
+
+a:hover {
+  color: teal;
+}
+
+.section-bg-color {
+  background-color: #f6f8fa;
+}
+
+footer a {
+  color: cornflowerblue;
+}
+
+
+header {
+  margin-top: 55px !important;
+}
+
+
+
+.jumbotron {
+  background-image: url("assets/diagonal-lines.svg");
+  background-repeat: repeat;
+}
+
+
+/* CODE ADJUSTMENTS */
+
+pre code.hljs {
+  border-radius: 10px;
+}
+
+pre code.hljs.plaintext {
+  margin-left: 15px;
+}
+</style>
+  <link rel="stylesheet" href="/Uchiyama.jl/css/custom.css">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+<body id="page-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+  <div class="container">
+    <span class="navbar-brand">
+      
+        <img src="/Uchiyama.jl/assets/logo.svg" class="img-fluid" style="height:         25px;
+padding-right:  10px;
+" alt="Logo"/>
+      
+      <a href="#page-top">Uchiyama.jl</a>
+      
+    </span>
+    <input type="checkbox" id="navbar-toggler-cbox" class="d-none" />
+    <label for="navbar-toggler-cbox" class="navbar-toggler" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </label>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        
+        <li class="nav-item">
+          <a class="nav-link" href="#about">About</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" href="#getting_started">Getting started</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" href="#example">Example</a>
+        </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <header class="text-white text-center">
+  
+    <div class="jumbotron jumbotron-fluid container-fluid bg-primary">
+  
+    <h1>Uchiyama.jl</h1>
+    <div class="lead">Julia implementation of the Uchiyama particle model
+</div>
+    
+      <a class="github-button" href="https://github.com/pnavaro/Uchiyama.jl" data-size="large" aria-label="View Uchiyama.jl on GitHub">View on GitHub</a>
+    
+    
+      <a class="github-button" href="https://github.com/pnavaro/Uchiyama.jl" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star Uchiyama.jl on GitHub">Star</a>
+    
+  </div>
+</header>
+
+  <!-- Content appended here -->
+<div class="franklin-content"><section id="about" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>About this Package</h2></p>
+<div class="lead">Uchiyama.jl is based upon  <a href="https://www.ljll.math.upmc.fr/~ayi">Nathalie Ayi</a>&#39;s work</div>
+<p>You have two types of particle:</p>
+<ul>
+<li><p>Uchiyama particle model</p>
+</li>
+<li><p>Hard sphere</p>
+</li>
+</ul>
+<p>and two types of boundary condition:</p>
+<ul>
+<li><p>walls</p>
+</li>
+<li><p>periodic</p>
+</li>
+</ul>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="getting_started" class="scrollspy section-bg-color">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Getting started</h2></p>
+<p>In order to get started, just add the package &#40;with <strong>Julia ≥ 1.3</strong>&#41; and</p>
+<pre><code class="julia-repl hljs"><span class="hljs-meta">julia&gt;</span><span class="julia"> pkg&#x27;add https://github.com/pnavaro/Uchiyama.jl&#x27;
+</span><span class="hljs-meta">julia&gt;</span><span class="julia"> <span class="hljs-keyword">using</span> Uchiyama</span></code></pre>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="example" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Example</h2></p>
+<div class="lead">50 particles moving in a square box</div>
+<pre><code class="julia hljs"><span class="hljs-keyword">using</span> Plots
+<span class="hljs-keyword">using</span> Random
+<span class="hljs-keyword">using</span> Uchiyama
+
+n = <span class="hljs-number">50</span> <span class="hljs-comment"># number of particles</span>
+ϵ = <span class="hljs-number">0.02</span>
+c = trunc(<span class="hljs-built_in">Int</span>, <span class="hljs-number">200</span>ϵ) <span class="hljs-comment"># marker size</span>
+
+rng = <span class="hljs-built_in">MersenneTwister</span>(<span class="hljs-number">1234</span>)
+
+particles = SquareParticles(rng, n, ϵ, option = :box)
+pc = ParticleCollisions(particles)
+bc = BoxCollisions(particles)
+
+steps = <span class="hljs-number">1000</span>
+
+anim = <span class="hljs-meta">@animate</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-number">1</span>:steps
+    
+     dt = step!(particles, pc, bc)
+
+     p = plot(size  = (<span class="hljs-number">200</span>,<span class="hljs-number">200</span>), 
+              xlims = (-<span class="hljs-number">0.5</span>,<span class="hljs-number">0.5</span>), 
+              ylims = (-<span class="hljs-number">0.5</span>,<span class="hljs-number">0.5</span>), 
+              grid  = <span class="hljs-literal">false</span>, 
+              axis  = <span class="hljs-literal">nothing</span>, framestyle= :box, legend=<span class="hljs-literal">false</span>, widen = <span class="hljs-literal">false</span>)
+     
+     scatter!( getindex.(particles.q,<span class="hljs-number">1</span>) .- getindex.(particles.q,<span class="hljs-number">2</span>), 
+               getindex.(particles.q,<span class="hljs-number">2</span>) .+ getindex.(particles.q,<span class="hljs-number">1</span>), 
+               markershape  = :square, 
+               markersize   = c, 
+               aspect_ratio = :equal)
+
+<span class="hljs-keyword">end</span> every <span class="hljs-number">10</span>
+
+gif(anim, joinpath(<span class="hljs-meta">@__DIR__</span>, <span class="hljs-string">&quot;event_driven.gif&quot;</span>), fps = <span class="hljs-number">10</span>)</code></pre>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<footer class="py-5 bg-dark">
+  <div class="container">
+    <p class="m-0 text-center text-white">&copy; Nathalie Ayi and Pierre Navaro. Website powered by <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, <a href="https://github.com/tlienart/PkgPage.jl">PkgPage.jl</a> and the <a href="https://julialang.org">Julia</a> programming language.</p>
+  </div>
+</footer>
+</div><!-- CONTENT ENDS HERE -->
+  
+  
+      
+
+
+  
+  <script src="/Uchiyama.jl/libs/simple-scrollspy.min.js"></script>
+  <script>
+  window.onload = function () {
+    scrollSpy('#navbarResponsive', {
+      sectionClass: '.scrollspy',
+      menuActiveTarget: '.nav-link',
+      offset: 100
+    })
+  }
+  </script>
+  </body>
+</html>
