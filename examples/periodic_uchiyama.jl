@@ -29,7 +29,7 @@ anim = @animate for _ in 1:steps
               xlims = (0,1), 
               ylims = (0,1), 
               grid  = false, 
-              axis  = nothing, legend=false, framestyle = :box, widen = false)
+              axis  = nothing, legend=false, framestyle = :none, widen = false)
 
      scatter!( getindex.(squares.q,1), 
                getindex.(squares.q,2), 
