@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Hard spheres in box · Uchiyama.jl</title><link rel="canonical" href="https://pnavaro.github.io/Uchiyama.jl/hard_spheres/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Uchiyama.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../event_driven/">Uchiyama model in box</a></li><li><a class="tocitem" href="../periodic_uchiyama/">Uchiyama model periodic</a></li><li class="is-active"><a class="tocitem" href>Hard spheres in box</a></li><li><a class="tocitem" href="../periodic_hard_spheres/">Hard spheres periodic</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Hard spheres in box</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Hard spheres in box</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/pnavaro/Uchiyama.jl/blob/master/examples/hard_spheres.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Hard-spheres-in-a-box"><a class="docs-heading-anchor" href="#Hard-spheres-in-a-box">Hard spheres in a box</a><a id="Hard-spheres-in-a-box-1"></a><a class="docs-heading-anchor-permalink" href="#Hard-spheres-in-a-box" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/pnavaro/Uchiyama.jl/gh-pages?filepath=dev/hard_spheres.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/pnavaro/Uchiyama.jl/blob/gh-pages/dev/hard_spheres.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><pre><code class="language-">using Plots
+using Random
+using ProgressMeter
+using Revise</code></pre><ul><li></li></ul><pre><code class="language-julia">using Uchiyama
+
+n = 50 # number of particles
+ϵ = 0.02
+c = trunc(Int, 200ϵ) # marker size
+
+rng = MersenneTwister(1234)
+
+hs = HardSpheres(rng, n, ϵ)
+pc = ParticleCollisions(hs)
+bc = BoxCollisions(hs)</code></pre><pre class="documenter-example-output">BoxCollisions([0.41546688704878226 Inf; Inf 0.42454017553936957; … ; 0.22313265911439412 Inf; Inf 0.21021798266045516])</pre><ul><li></li></ul><pre><code class="language-">steps = 1000
+pbar = Progress(steps)
+
+anim = @animate for _ in 1:steps
+
+    dt = step!(hs, pc, bc)
+
+    p = plot(size  = (200,200),
+             xlims = (0,1),
+             ylims = (0,1),
+             grid  = false,
+             axis  = nothing,
+             framestyle= :box,
+             legend=false,
+             widen = false)
+
+    scatter!( getindex.(hs.q,1),
+              getindex.(hs.q,2),
+              markershape  = :circle,
+              markersize   = c,
+              aspect_ratio = :equal)
+
+    next!(pbar)
+
+end every 10</code></pre><ul><li></li></ul><pre><code class="language-">gif(anim, joinpath(@__DIR__, &quot;hard_spheres.gif&quot;), fps = 10)</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../periodic_uchiyama/">« Uchiyama model periodic</a><a class="docs-footer-nextpage" href="../periodic_hard_spheres/">Hard spheres periodic »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 5 November 2020 10:11">Thursday 5 November 2020</span>. Using Julia version 1.5.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
