@@ -4,11 +4,7 @@
 
 using Plots
 using Random
-using ProgressMeter
 using Uchiyama
-
-
-# +
 
 
 n = 100 # number of particles
@@ -20,10 +16,7 @@ rng = MersenneTwister(1234)
 hs = HardSpheres(rng, n, ϵ)
 pc = PeriodicCollisions(hs)
 
-# +
-
 steps = 1000
-pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
@@ -44,11 +37,6 @@ anim = @animate for _ in 1:steps
               markersize   = c, 
               aspect_ratio = :equal)
 
-    next!(pbar)
-
 end every 10
-# -
 
 gif(anim, joinpath(@__DIR__, "periodic_hard_spheres.gif"), fps = 20)
-
-

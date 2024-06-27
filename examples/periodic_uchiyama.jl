@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
 using Plots
 using Random
-using ProgressMeter
 using Uchiyama
 
-
-# +
 
 n = 50 # number of particles
 ϵ = 0.02
@@ -18,7 +14,6 @@ squares = SquareParticles(rng, n, ϵ)
 collisions = PeriodicCollisions(squares)
 
 steps = 500
-pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
@@ -35,10 +30,8 @@ anim = @animate for _ in 1:steps
                markershape  = :diamond, 
                markersize   = c, 
                aspect_ratio = :equal)
-     next!(pbar)
 
 end
-# -
 
 gif(anim, joinpath(@__DIR__, "periodic_uchiyama.gif"), fps = 20)
 

@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
 using Plots
 using Random
-using ProgressMeter
 using Uchiyama
 
-
-# +
 n = 50 # number of particles
 ϵ = 0.02
 c = trunc(Int, 200ϵ) # marker size
@@ -16,10 +12,7 @@ particles = SquareParticles(rng, n, ϵ, option = :box)
 pc = ParticleCollisions(particles)
 bc = BoxCollisions(particles)
 
-# +
-
 steps = 1000
-pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
@@ -36,11 +29,7 @@ anim = @animate for _ in 1:steps
                markershape  = :square, 
                markersize   = c, 
                aspect_ratio = :equal)
-     next!(pbar)
 
 end every 10
-# -
 
 gif(anim, joinpath(@__DIR__, "event_driven.gif"), fps = 10)
-
-

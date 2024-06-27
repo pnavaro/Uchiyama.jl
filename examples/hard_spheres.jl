@@ -6,11 +6,7 @@
 
 using Plots
 using Random
-using ProgressMeter
 using Uchiyama
-
-
-# +
 
 
 n = 50 # number of particles
@@ -23,10 +19,7 @@ hs = HardSpheres(rng, n, ϵ)
 pc = ParticleCollisions(hs)
 bc = BoxCollisions(hs)
 
-# +
-
 steps = 1000
-pbar = Progress(steps)
 
 anim = @animate for _ in 1:steps
     
@@ -47,11 +40,6 @@ anim = @animate for _ in 1:steps
               markersize   = c, 
               aspect_ratio = :equal)
 
-    next!(pbar)
-
 end every 10
-# -
 
 gif(anim, joinpath(@__DIR__, "hard_spheres.gif"), fps = 10)
-
-
