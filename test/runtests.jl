@@ -80,3 +80,4 @@ end
 
 include("test_tempscoll.jl")
 include("test_fantome.jl")
+include("Aqua.jl")
