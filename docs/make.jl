@@ -19,9 +19,9 @@ end
 makedocs(;
     modules=[Uchiyama],
     authors="Nathalie Ayi and Pierre Navaro",
-    repo="https://github.com/pnavaro/Uchiyama.jl/blob/{commit}{path}#L{line}",
     sitename="Uchiyama.jl",
     format=Documenter.HTML(;
+        repolink="https://github.com/pnavaro/Uchiyama.jl/dev",
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://pnavaro.github.io/Uchiyama.jl",
         assets=String[],
