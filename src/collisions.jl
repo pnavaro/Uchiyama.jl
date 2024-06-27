@@ -2,7 +2,7 @@ export ParticleCollisions
 
 struct ParticleCollisions
 
-    dt
+    dt :: Matrix{Float64}
 
     function ParticleCollisions( p :: Particles)
 
@@ -28,7 +28,7 @@ export BoxCollisions
 
 struct BoxCollisions
 
-    dt
+    dt :: Matrix{Float64}
 
     function BoxCollisions( p :: HardSpheres)
 

@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
 # # Hard spheres in a box
 #
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/hard_spheres.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/hard_spheres.ipynb)
+# md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/hard_spheres.ipynb)
+# md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/hard_spheres.ipynb)
 
 using Plots
 using Random
 using ProgressMeter
-using Revise
+using Uchiyama
 
 
 # +
-using Uchiyama
+
 
 n = 50 # number of particles
 ϵ = 0.02
@@ -52,3 +53,5 @@ end every 10
 # -
 
 gif(anim, joinpath(@__DIR__, "hard_spheres.gif"), fps = 10)
+
+

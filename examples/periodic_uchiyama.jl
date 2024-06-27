@@ -2,11 +2,10 @@
 using Plots
 using Random
 using ProgressMeter
-using Revise
+using Uchiyama
 
 
 # +
-using Uchiyama
 
 n = 50 # number of particles
 ϵ = 0.02
@@ -42,3 +41,5 @@ end
 # -
 
 gif(anim, joinpath(@__DIR__, "periodic_uchiyama.gif"), fps = 20)
+
+

@@ -2,12 +2,10 @@
 using Plots
 using Random
 using ProgressMeter
-using Revise
+using Uchiyama
 
 
 # +
-using Uchiyama
-
 n = 50 # number of particles
 ϵ = 0.02
 c = trunc(Int, 200ϵ) # marker size

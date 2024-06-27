@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 using Random
 using Plots
 using Distances
 using ProgressMeter
 
+# +
 function time_driven(nstep)
 
     np = 50
@@ -94,5 +96,8 @@ function time_driven(nstep)
     gif(anim, joinpath(@__DIR__, "time_driven.gif"), fps = 10)
 
 end
+# -
+
+@time time_driven(1000)
 
 

@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 using Plots
 using LinearAlgebra
 
+# +
 function main( np, nstep )
 
     ϵ = 1/np
@@ -140,5 +142,8 @@ function main( np, nstep )
     return time
 
 end
+# -
 
 @time main(100, 1000)
+
+

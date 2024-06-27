@@ -4,10 +4,10 @@ export HardSpheres
 
 struct HardSpheres <: Particles
 
-    n
-    q
-    v
-    ϵ
+    n :: Int
+    q :: Vector{Vector{Float64}}
+    v :: Vector{Vector{Float64}}
+    ϵ :: Float64
 
     function HardSpheres(q :: Vector{Vector{Float64}}, v, ϵ :: AbstractFloat)
 

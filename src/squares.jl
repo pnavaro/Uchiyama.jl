@@ -66,10 +66,10 @@ export SquareParticles
 
 struct SquareParticles <: Particles
 
-    n
-    q
-    v
-    ϵ
+    n :: Int
+    q :: Vector{Vector{Float64}}
+    v :: Vector{Vector{Float64}}
+    ϵ :: Float64
 
     function SquareParticles(q :: Vector{Vector{Float64}}, v, ϵ :: AbstractFloat)
 

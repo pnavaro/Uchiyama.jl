@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 # # Hard spheres in periodic domain
 
 
 using Plots
 using Random
 using ProgressMeter
-using Revise
+using Uchiyama
 
 
 # +
-using Uchiyama
+
 
 n = 100 # number of particles
 ϵ = 0.02
@@ -49,3 +50,5 @@ end every 10
 # -
 
 gif(anim, joinpath(@__DIR__, "periodic_hard_spheres.gif"), fps = 20)
+
+
