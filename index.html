@@ -144,8 +144,8 @@ padding-right:  10px;
       <div class="col-lg-10 mx-auto">
         <h2>Getting started</h2></p>
 <p>In order to get started, just add the package &#40;with <strong>Julia ≥ 1.3</strong>&#41; and</p>
-<pre><code class="julia-repl hljs"><span class="hljs-meta">julia&gt;</span><span class="julia"> pkg&#x27;add https://github.com/pnavaro/Uchiyama.jl&#x27;
-</span><span class="hljs-meta">julia&gt;</span><span class="julia"> <span class="hljs-keyword">using</span> Uchiyama</span></code></pre>
+<pre><code class="julia-repl hljs"><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> pkg&#x27;add https://github.com/pnavaro/Uchiyama.jl&#x27;
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">using</span> Uchiyama</span></code></pre>
 <p>      </div>
     </div>
   </div>
@@ -164,7 +164,7 @@ n = <span class="hljs-number">50</span> <span class="hljs-comment"># number of p
 ϵ = <span class="hljs-number">0.02</span>
 c = trunc(<span class="hljs-built_in">Int</span>, <span class="hljs-number">200</span>ϵ) <span class="hljs-comment"># marker size</span>
 
-rng = <span class="hljs-built_in">MersenneTwister</span>(<span class="hljs-number">1234</span>)
+rng = MersenneTwister(<span class="hljs-number">1234</span>)
 
 particles = SquareParticles(rng, n, ϵ, option = :box)
 pc = ParticleCollisions(particles)
