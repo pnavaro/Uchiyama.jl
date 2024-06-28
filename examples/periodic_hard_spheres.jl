@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
 # # Hard spheres in periodic domain
 
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/periodic_hard_spheres.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/periodic_hard_spheres.ipynb)
 
 using Plots
 using Random
